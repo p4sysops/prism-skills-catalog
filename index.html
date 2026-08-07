@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perforce Prism — Skills Catalog</title>
+<meta name="author" content="Christopher Lind">
+<meta name="version" content="0.3">
+<meta name="description" content="Perforce Prism Skills Catalog — what skills exist, what's in progress, and who owns them.">
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --s0:#64748b; --s0-bg:rgba(100,116,139,0.08);
+    --s1:#2563eb; --s1-bg:rgba(37,99,235,0.08);
+    --s2:#d97706; --s2-bg:rgba(217,119,6,0.08);
+    --s3:#059669; --s3-bg:rgba(5,150,105,0.08);
+    --s4:#7c3aed; --s4-bg:rgba(124,58,237,0.08);
+    --teal:#0891b2; --teal-bg:rgba(8,145,178,0.08);
+    --pink:#db2777; --pink-bg:rgba(219,39,119,0.08);
+    --brand:#5b2d8e; --brand-bg:rgba(91,45,142,0.08); --brand-border:rgba(91,45,142,0.28);
+    --ok:#059669; --warn:#d97706;
+    --bg:#ffffff; --surface:#f8fafc; --surface2:#f1f5f9;
+    --text:#1e293b; --muted:#475569; --dim:#94a3b8;
+    --border:rgba(0,0,0,0.08);
+    --font-display:'Fraunces',serif;
+    --font-body:'Outfit',sans-serif;
+    --font-mono:'Space Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh}
+
+  .app-header{position:fixed;top:0;left:0;right:0;height:38px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem;padding:0 1rem;z-index:60;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(248,250,252,0.95);line-height:1}
+  .app-header-logo{width:22px;height:22px;flex-shrink:0;color:var(--brand)}
+  .app-header-logo svg{width:100%;height:100%;display:block}
+  .app-header-title{font-family:var(--font-display);font-size:0.78rem;font-weight:600;color:var(--text);white-space:nowrap;line-height:38px}
+  .app-header-sep{color:var(--dim);font-size:0.7rem;line-height:38px}
+  .app-header-sub{font-size:0.75rem;color:var(--muted);font-weight:400;line-height:38px}
+  .app-header-version{margin-left:auto;font-family:var(--font-mono);font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:3px 8px;border-radius:4px;background:var(--brand-bg);color:var(--brand);white-space:nowrap;line-height:1}
+
+  .app-footer{position:fixed;bottom:0;left:0;right:0;height:32px;background:rgba(248,250,252,0.95);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--dim);z-index:60;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
+  .app-shell{display:flex;min-height:calc(100vh - 70px);margin-top:38px;margin-bottom:32px}
+  .sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:38px;height:calc(100vh - 70px);transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;z-index:50}
+  .sidebar.collapsed{width:48px;min-width:48px}
+  .sidebar.collapsed .sidebar-label{opacity:0;width:0;overflow:hidden}
+  .sidebar.collapsed .sidebar-item{justify-content:center;padding:0.6rem;gap:0}
+  .sidebar.collapsed .sidebar-collapse-btn{justify-content:center;padding:0.55rem;gap:0}
+  .sidebar.collapsed .sidebar-collapse-icon{transform:rotate(180deg)}
+  .sidebar.collapsed .sidebar-divider{margin:0.25rem 0.25rem}
+  .sidebar-nav{display:flex;flex-direction:column;gap:2px;padding:0.6rem 0.5rem;flex:1}
+  .sidebar-item{display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.7rem;border-radius:8px;text-decoration:none;color:var(--muted);font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+  .sidebar-item:hover{background:rgba(0,0,0,0.04);color:var(--text)}
+  .sidebar-item.active{background:var(--brand-bg);color:var(--brand);font-weight:600}
+  .sidebar-icon{width:18px;height:18px;flex-shrink:0;opacity:0.55}
+  .sidebar-item.active .sidebar-icon{opacity:1}
+  .sidebar-label{transition:opacity 0.2s;overflow:hidden;white-space:nowrap}
+  .sidebar-divider{height:1px;background:var(--border);margin:0.25rem 0.5rem;flex-shrink:0}
+  .sidebar-collapse-btn{display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.7rem;border-radius:8px;border:none;background:none;color:var(--dim);font-size:0.82rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;width:100%;text-align:left;font-family:var(--font-body)}
+  .sidebar-collapse-btn:hover{background:rgba(0,0,0,0.04);color:var(--muted)}
+  .sidebar-collapse-icon{width:16px;height:16px;flex-shrink:0;transition:transform 0.25s ease}
+  .main-area{flex:1;min-width:0;overflow-x:hidden;display:flex;flex-direction:column}
+  .main-content{max-width:1200px;margin:0 auto;padding:2rem 2.5rem 4rem;flex:1;width:100%}
+  .section-content{display:none}.section-content.active{display:block;animation:fadeSection 0.3s ease}
+  @keyframes fadeSection{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+  .page-title{font-family:var(--font-display);font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:0.4rem}
+  .page-sub{font-size:0.95rem;color:var(--muted);line-height:1.55;max-width:780px;margin-bottom:2rem}
+  .mono-label{font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim)}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem;margin-bottom:2rem}
+  .stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem}
+  .stat-tile .stat-val{font-family:var(--font-display);font-size:1.7rem;font-weight:800;line-height:1}
+  .stat-tile .stat-lbl{font-family:var(--font-mono);font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim);margin-top:0.4rem}
+
+  .area-tabs{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:1.25rem;background:var(--surface);border-radius:10px;padding:4px;border:1px solid var(--border)}
+  .area-tab{flex:1;min-width:90px;padding:0.55rem 0.7rem;text-align:center;font-family:var(--font-body);font-size:0.78rem;font-weight:600;color:var(--dim);background:none;border:none;cursor:pointer;transition:all 0.18s;border-radius:7px;white-space:nowrap}
+  .area-tab:hover{color:var(--muted);background:rgba(0,0,0,0.02)}
+  .area-tab.active{color:var(--text);background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+  .area-tab .count{font-family:var(--font-mono);font-size:0.6rem;color:var(--dim);margin-left:0.35rem;font-weight:700}
+  .area-tab.active .count{color:var(--muted)}
+
+  .dept-header{display:flex;align-items:flex-start;gap:0.9rem;padding:1.2rem 1.25rem;margin-bottom:1.5rem;background:var(--surface);border-radius:12px;border-left:4px solid var(--dept-accent,var(--dim))}
+  .dept-title{font-family:var(--font-display);font-size:1.5rem;font-weight:700;line-height:1.2;margin-bottom:0.3rem}
+  .dept-desc{font-size:0.85rem;color:var(--muted);line-height:1.5;margin-bottom:0.5rem}
+  .dept-meta{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.6rem}
+  .dept-meta .pill{font-size:0.7rem;padding:3px 8px;border-radius:4px;background:var(--surface2);color:var(--muted)}
+
+  .role-group{margin-bottom:2rem}
+  .role-group-head{display:flex;align-items:center;gap:0.6rem;margin:0 0 0.8rem 0.1rem;flex-wrap:wrap}
+  .role-group-head .role-name{font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--text)}
+  .role-group-head .role-count{font-family:var(--font-mono);font-size:0.6rem;color:var(--dim);background:var(--surface2);padding:2px 7px;border-radius:4px;font-weight:700}
+
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:0.7rem;margin-bottom:1.5rem}
+  .e-card{background:var(--surface);border-radius:10px;border:1px solid var(--border);border-top:3px solid var(--card-accent,var(--dim));overflow:hidden}
+  .e-card-head{padding:0.85rem 0.95rem}
+  .e-card-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem}
+  .e-card-title{font-family:var(--font-mono);font-size:0.92rem;font-weight:700;line-height:1.25;color:var(--text)}
+  .e-card-friendly{font-family:var(--font-display);font-size:0.78rem;color:var(--dim);margin-top:0.15rem}
+  .e-card-meta{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.45rem}
+  .e-card-summary{font-size:0.82rem;color:var(--muted);line-height:1.5;margin-top:0.55rem}
+  .e-card-detail{padding:0.75rem 0.95rem 1rem;font-size:0.8rem;line-height:1.55;color:var(--muted);border-top:1px solid var(--border)}
+  .e-card-detail h4{font-family:var(--font-mono);font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim);margin:0.85rem 0 0.4rem}
+  .e-card-detail h4:first-child{margin-top:0}
+  .kv-skills{display:flex;flex-wrap:wrap;gap:0.3rem;align-items:center}
+  .kv-list{list-style:none;margin:0;padding:0}
+  .kv-list li{padding:0.4rem 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+  .kv-list li:last-child{border-bottom:none}
+  .kv-head{display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap}
+  .kv-name{font-weight:600;color:var(--text);font-size:0.82rem}
+  .meta-line{display:flex;justify-content:space-between;gap:0.5rem;padding:0.15rem 0;font-size:0.8rem}
+  .meta-line span:first-child{color:var(--dim)}
+  .meta-line span:last-child{color:var(--text);font-weight:500;text-align:right}
+
+  .badge{font-family:var(--font-mono);font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 6px;border-radius:4px;display:inline-block;line-height:1.2}
+  .badge-area{background:var(--area-bg,var(--s0-bg));color:var(--area,var(--s0))}
+  .badge-active{background:rgba(5,150,105,0.12);color:var(--ok)}
+  .badge-inprogress{background:rgba(217,119,6,0.14);color:var(--warn)}
+  .badge-type-outcome{background:var(--s3-bg);color:var(--s3)}
+  .badge-type-throughput{background:var(--s1-bg);color:var(--s1)}
+  .badge-dir{background:var(--surface2);color:var(--muted);font-family:var(--font-mono)}
+  .badge-dir .arrow{font-weight:700}
+  .pill-skill{font-family:var(--font-mono);font-size:0.66rem;font-weight:600;padding:3px 7px;border-radius:4px;background:var(--surface2);color:var(--muted);display:inline-block}
+  .pill-product{font-size:0.68rem;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--brand-bg);color:var(--brand);display:inline-block}
+  .pill-product.all{background:var(--surface2);color:var(--muted)}
+  .pill-source{font-size:0.68rem;padding:3px 8px;border-radius:4px;background:var(--surface2);color:var(--muted);display:inline-block}
+  .pill-source.tbd{font-style:italic;color:var(--dim);border:1px dashed var(--border);background:transparent}
+  .pill-trigger{font-family:var(--font-mono);font-size:0.66rem;padding:3px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
+  .pill-owner{font-size:0.7rem;padding:2px 8px;border-radius:20px;background:var(--brand-bg);color:var(--brand);font-weight:600}
+  .outputs-text{font-size:0.8rem;color:var(--muted);line-height:1.5}
+
+  .area-sales{--area:var(--s3);--area-bg:var(--s3-bg)}
+  .area-legal{--area:var(--s0);--area-bg:var(--s0-bg)}
+  .area-marketing{--area:var(--s1);--area-bg:var(--s1-bg)}
+  .area-finance{--area:var(--teal);--area-bg:var(--teal-bg)}
+  .area-product-management{--area:var(--s4);--area-bg:var(--s4-bg)}
+  .area-customer-support{--area:var(--s2);--area-bg:var(--s2-bg)}
+  .area-customer-success{--area:var(--teal);--area-bg:var(--teal-bg)}
+  .area-design{--area:var(--pink);--area-bg:var(--pink-bg)}
+  .area-operations{--area:var(--s0);--area-bg:var(--s0-bg)}
+
+  .view-toolbar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+  .search-input{flex:1;min-width:200px;max-width:340px;padding:0.5rem 0.75rem;font-family:var(--font-body);font-size:0.82rem;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:6px;outline:none;transition:all 0.15s}
+  .search-input:focus{border-color:var(--brand);background:var(--bg);box-shadow:0 0 0 3px var(--brand-bg)}
+  .empty-state{text-align:center;padding:2rem;color:var(--dim);font-size:0.85rem;font-style:italic}
+
+  .legend{display:flex;flex-wrap:wrap;gap:1.25rem;margin-bottom:1.5rem;font-size:0.82rem;color:var(--muted);line-height:1.5}
+  .legend .li{display:flex;align-items:flex-start;gap:0.5rem;max-width:360px}
+  .legend .dot{width:10px;height:10px;border-radius:3px;margin-top:0.32rem;flex-shrink:0}
+
+  .form-grid{display:grid;gap:1rem;max-width:640px}
+  .form-field label{display:block;font-family:var(--font-mono);font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--dim);margin-bottom:0.35rem}
+  .form-field input,.form-field textarea,.form-field select{width:100%;padding:0.6rem 0.7rem;font-family:var(--font-body);font-size:0.85rem;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:7px;outline:none;transition:all 0.15s}
+  .form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--brand);background:var(--bg);box-shadow:0 0 0 3px var(--brand-bg)}
+  .form-field textarea{resize:vertical;min-height:72px;line-height:1.5}
+  .form-actions{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.4rem}
+  .btn{font-family:var(--font-body);font-size:0.84rem;font-weight:600;padding:0.6rem 1.1rem;border-radius:7px;border:1px solid var(--brand);cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem}
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost{background:transparent;color:var(--brand)}
+  .btn-ghost:hover{background:var(--brand-bg)}
+  .form-status{font-size:0.78rem;color:var(--ok);font-weight:600;min-height:1rem}
+  .preview-box{margin-top:1.25rem;max-width:640px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.9rem 1rem;font-family:var(--font-mono);font-size:0.72rem;white-space:pre-wrap;color:var(--muted);line-height:1.55;display:none}
+  .preview-box.show{display:block}
+
+  .mobile-nav-bar{display:none;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:38px;z-index:40}
+  .mobile-hamburger{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+  .mobile-title{font-family:var(--font-display);font-size:1rem;font-weight:600}
+  .mobile-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:45}
+  .mobile-backdrop.active{display:block}
+
+  @media(max-width:768px){
+    .sidebar{position:fixed;top:38px;left:0;bottom:32px;height:auto;width:240px;min-width:240px;transform:translateX(-100%);transition:transform 0.3s ease;z-index:50}
+    .sidebar.mobile-open{transform:translateX(0)}
+    .sidebar.mobile-open .sidebar-label{opacity:1;width:auto}
+    .sidebar.mobile-open .sidebar-item{justify-content:flex-start;padding:0.55rem 0.7rem}
+    .sidebar .sidebar-collapse-btn{display:none}
+    .mobile-nav-bar{display:flex}
+    .main-content{padding:1.5rem 1rem 3rem}
+    .area-tab{flex:0 1 auto;min-width:unset}
+    .card-grid{grid-template-columns:1fr}
+  }
+  @media print{
+    *{animation:none!important}
+    .section-content{display:block!important;page-break-before:always}
+    .sidebar,.app-header,.app-footer,.mobile-nav-bar,.view-toolbar{display:none!important}
+    .app-shell{margin:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <span class="app-header-logo"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M25 8 H14 Q8 8 8 14 V27"/><path d="M4.5 22.5 L8 27 L11.5 22.5"/><path d="M25 15.5 Q15 15.5 15 22"/><g transform="rotate(180 20 20)"><path d="M25 8 H14 Q8 8 8 14 V27"/><path d="M4.5 22.5 L8 27 L11.5 22.5"/><path d="M25 15.5 Q15 15.5 15 22"/></g></g></svg></span>
+  <span class="app-header-title">Perforce Prism</span>
+  <span class="app-header-sep">/</span>
+  <span class="app-header-sub">Skills Catalog</span>
+  <span class="app-header-version" id="versionBadge"></span>
+</div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+      <a class="sidebar-item active" data-section="overview" onclick="navigateTo('overview')">
+        <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg>
+        <span class="sidebar-label">Overview</span>
+      </a>
+      <div class="sidebar-divider"></div>
+      <a class="sidebar-item" data-section="by-skill" onclick="navigateTo('by-skill')">
+        <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14M3 10h14M3 16h9"/></svg>
+        <span class="sidebar-label">By Skill</span>
+      </a>
+      <a class="sidebar-item" data-section="by-kpi" onclick="navigateTo('by-kpi')">
+        <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V8M8 16V4M12 16v-6M16 16V6"/></svg>
+        <span class="sidebar-label">By KPI</span>
+      </a>
+      <a class="sidebar-item" data-section="by-product" onclick="navigateTo('by-product')">
+        <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 17 6.5 10 10.5 3 6.5 Z"/><path d="M3 10.5 10 14.5 17 10.5"/><path d="M3 14 10 18 17 14"/></svg>
+        <span class="sidebar-label">By Product</span>
+      </a>
+      <div class="sidebar-divider"></div>
+      <a class="sidebar-item" data-section="request" onclick="navigateTo('request')">
+        <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v12M4 10h12"/></svg>
+        <span class="sidebar-label">Request Catalog Update</span>
+      </a>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-collapse-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <svg class="sidebar-collapse-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,4 6,10 12,16"/></svg>
+        <span class="sidebar-label">Collapse</span>
+      </button>
+    </nav>
+  </aside>
+  <main class="main-area">
+    <div class="mobile-nav-bar">
+      <button class="mobile-hamburger" onclick="toggleMobileSidebar()">&#9776;</button>
+      <span class="mobile-title">Prism Skills Catalog</span>
+    </div>
+    <div class="mobile-backdrop" id="mobileBackdrop" onclick="toggleMobileSidebar()"></div>
+    <div class="main-content">
+      <div class="section-content active" id="section-overview"></div>
+      <div class="section-content" id="section-by-skill"></div>
+      <div class="section-content" id="section-by-kpi"></div>
+      <div class="section-content" id="section-by-product"></div>
+      <div class="section-content" id="section-request"></div>
+    </div>
+  </main>
+</div>
+
+<footer class="app-footer" id="appFooter">Perforce Prism — Skills Catalog · Internal · POC</footer>
+
+<script>
+// ============================ SINGLE SOURCE OF TRUTH ============================
+// Every view reads from these structures. Add a skill = add one record below.
+
+// Controlled product list (display names). "All Products" is last.
+var PRODUCTS = [
+  "All Products",
+  "Akana","Components","Gliffy","JRebel","OpenLogic","Zend",
+  "P4 Plan","P4","ALM","IPLM",
+  "Puppet","Delphix",
+  "BlazeMeter","Perfecto",
+  "Perforce QAC","Perforce Klocwork"
+];
+
+var KPIS = {
+  "win-rate":            { name:"Win rate",                role:"Account Executive",      type:"outcome",    unit:"%",     dir:"up",   desc:"Qualified opps closed-won / total closed." },
+  "sales-cycle":         { name:"Sales cycle length",      role:"Account Executive",      type:"outcome",    unit:"days",  dir:"down", desc:"Days from opp created to closed-won." },
+  "demo-to-close":       { name:"Demo-to-close conversion",role:"Account Executive",      type:"throughput", unit:"%",     dir:"up",   desc:"Demos that become closed-won." },
+  "proposal-turnaround": { name:"Proposal turnaround time",role:"Account Executive",      type:"throughput", unit:"days",  dir:"down", desc:"Request to proposal delivered." },
+  "technical-win-rate":  { name:"Technical-win rate",      role:"Solutions Engineer",     type:"outcome",    unit:"%",     dir:"up",   desc:"SE-engaged deals closed-won / SE-engaged total." },
+  "deals-supported":     { name:"Deals supported per SE",  role:"Solutions Engineer",     type:"outcome",    unit:"count", dir:"up",   desc:"SE coverage capacity." },
+  "rfp-turnaround":      { name:"RFP response turnaround", role:"Solutions Engineer",     type:"throughput", unit:"days",  dir:"down", desc:"RFP received to submitted response." },
+  "asset-turnaround":    { name:"Asset turnaround time",   role:"Sales Enablement",       type:"throughput", unit:"days",  dir:"down", desc:"Asset request to published." },
+  "nrr":                 { name:"Net revenue retention",   role:"Customer Success Manager",type:"outcome",   unit:"%",     dir:"up",   desc:"Expansion minus churn on existing book." },
+  "gross-retention":     { name:"Gross logo retention",    role:"Customer Success Manager",type:"outcome",   unit:"%",     dir:"up",   desc:"Retained logos / total at period start." },
+  "time-to-value":       { name:"Time-to-first-value",     role:"Customer Success Manager",type:"throughput",unit:"days",  dir:"down", desc:"Close date to activation milestone." },
+  "brand-compliance-rate":     { name:"Brand compliance rate",       role:"Marketing Manager", type:"throughput", unit:"%", dir:"up", desc:"Published assets passing brand review." },
+  "content-attributed-pipeline":{ name:"Content-attributed pipeline", role:"Content Marketer",  type:"outcome",    unit:"$", dir:"up", desc:"Pipeline touching content assets." },
+  "brand-consistency-score":   { name:"Brand consistency score",     role:"Content Marketer",  type:"throughput", unit:"%", dir:"up", desc:"Share of content passing brand consistency review." },
+  "marketing-sourced-pipeline": { name:"Marketing-sourced pipeline",   role:"Marketing Manager",              type:"outcome",    unit:"$",           dir:"up",   desc:"Pipeline $ attributed to marketing origin." },
+  "content-production-velocity":{ name:"Content production velocity", role:"Content Marketer",                type:"throughput", unit:"count/week",  dir:"up",   desc:"Published assets per week." },
+  "time-to-publish":            { name:"Time-to-publish",             role:"Content Marketer",                type:"throughput", unit:"days",         dir:"down", desc:"Brief to published." },
+  "time-to-campaign-launch":    { name:"Time-to-campaign-launch",      role:"Demand Gen / Campaign Manager",   type:"throughput", unit:"days",         dir:"down", desc:"Campaign kickoff to live." }
+};
+var ROLE_ORDER = ["Account Executive","Solutions Engineer","Sales Enablement","Customer Success Manager","Marketing Manager","Content Marketer","Demand Gen / Campaign Manager"];
+
+var SKILLS = [
+  {
+    name:"roi-story",
+    friendly:"ROI Story",
+    area:"sales",
+    status:"active",
+    summary:"Builds an ROI narrative and business case for a deal \u2014 produces an Excel ROI model, a Word one-pager, and a follow-up email.",
+    products:["Delphix"],
+    who_runs:["Sales Engineers","Sales"],
+    audience:"The prospect and the internal deal team \u2014 the model, one-pager, and email support a live opportunity.",
+    captains:["Chris Perez","Beth Hanson"],
+    launched:"Aug 3, 2026",
+    updated:"Aug 5, 2026",
+    data_sources:["Salesforce","Gong"],
+    outputs:"An Excel ROI model, a Word one-pager, and a follow-up email \u2014 the business case a rep hands a prospect to justify the purchase.",
+    triggers:["build ROI for [company]","ROI business case for [account]"],
+    kpis:["win-rate","sales-cycle","demo-to-close","proposal-turnaround"]
+  },
+  {
+    name:"rfp-builder",
+    friendly:"RFP Builder",
+    area:"sales",
+    status:"active",
+    summary:"Drafts RFP / RFI responses from approved knowledge bases. Produces a structured response draft for review.",
+    products:["OpenLogic","Puppet"],
+    who_runs:["Sales Engineers","Sales"],
+    audience:"The prospect's procurement or evaluation team receiving the completed response.",
+    captains:["Nico Kruger","Tim Carroll"],
+    launched:"\u2014 (planned)",
+    updated:"Jun 17, 2026",
+    data_sources:["Marketing Resource Center","Puppet Help Docs","OpenLogic Help Docs","Perforce Trust Center"],
+    outputs:"A drafted RFP/RFI response, ready for review before it goes back to the prospect.",
+    triggers:["respond to this RFP","vendor questionnaire","security questionnaire"],
+    kpis:["proposal-turnaround","technical-win-rate","deals-supported","rfp-turnaround","asset-turnaround"]
+  },
+  {
+    name:"sales-to-csm-handoff",
+    friendly:"Sales to CSM Handoff",
+    area:"customer-success",
+    status:"active",
+    summary:"When a deal closes, generates a pre-filled handoff spreadsheet to speed the transition from sales to customer success.",
+    products:["All Products"],
+    who_runs:["Account Executives","Customer Success Managers"],
+    audience:"Internal \u2014 the CSM team receiving the newly closed account.",
+    captains:["Mimi Benach","Mendi Short"],
+    launched:"Aug 3, 2026",
+    updated:"Aug 5, 2026",
+    data_sources:["Salesforce","Gong"],
+    outputs:"A pre-filled handoff spreadsheet that gives the CSM team what they need to take over a new account.",
+    triggers:["sales handoff for [customer]","handoff questionnaire","onboarding handoff"],
+    kpis:["nrr","gross-retention","time-to-value"]
+  },
+  {
+    name:"brand-governance",
+    friendly:"Brand Governance",
+    area:"marketing",
+    status:"in-progress",
+    summary:"Enforces consistent brand voice and style across marketing content, including tone, terminology, and copy standards.",
+    products:["All Products"],
+    who_runs:["Content Marketers","Marketing Managers"],
+    audience:"Content Marketer",
+    captains:["Erin Hofstrom"],
+    launched:"\u2014 (planned)",
+    updated:"Aug 5, 2026",
+    data_sources:[],
+    outputs:"Brand-compliant marketing copy \u2014 content reviewed and adjusted for tone, terminology, and style consistency before it ships.",
+    triggers:[],
+    kpis:["brand-compliance-rate","content-attributed-pipeline","brand-consistency-score"]
+  },
+  {
+    name:"content-creation",
+    friendly:"Content Creation",
+    area:"marketing",
+    status:"in-progress",
+    summary:"Creates marketing content across email, landing pages, blogs, and social using templates and brand guidelines.",
+    products:["All Products"],
+    who_runs:["Content Team","Growth Marketers"],
+    audience:"Content team, growth marketers",
+    captains:["Beth Hanson"],
+    launched:"\u2014 (planned)",
+    updated:"Aug 5, 2026",
+    data_sources:[],
+    outputs:"Ready-to-publish marketing content \u2014 email, landing page, blog, and social copy built from templates and brand guidelines.",
+    triggers:[],
+    kpis:["marketing-sourced-pipeline","content-attributed-pipeline","content-production-velocity","time-to-publish","brand-consistency-score","time-to-campaign-launch"]
+  },
+  {
+    name:"sku-intake",
+    friendly:"SKU Intake",
+    area:"operations",
+    status:"in-progress",
+    summary:"Accelerates SKU intake by guiding product managers through SKU requirements for creating a new SKU.",
+    products:["All Products"],
+    who_runs:["Product Managers"],
+    audience:"Internal \u2014 the teams that process and approve new SKUs.",
+    captains:["Lindsay Riesbeck","Hunter Adcock"],
+    launched:"\u2014 (planned)",
+    updated:"Aug 6, 2026",
+    data_sources:[],
+    outputs:"To be confirmed.",
+    triggers:[],
+    kpis:[]
+  }
+];
+
+var DEPARTMENTS = [
+  { key:"sales", name:"Sales", description:"Prospecting, pipeline, deal execution, and post-sale handoff." },
+  { key:"customer-success", name:"Customer Success", description:"Post-sale account management, adoption, retention, and expansion." },
+  { key:"marketing", name:"Marketing", description:"Brand voice, content standards, and campaign consistency across marketing assets." },
+  { key:"operations", name:"Operations", description:"Internal process, tooling, and cross-functional operations." },
+  { key:"product-management", name:"Product", description:"Product specs, roadmaps, research synthesis, and stakeholder communication." }
+];
+// ===============================================================================
+
+var AREA_CLASSES = {
+  'sales':'area-sales','legal':'area-legal','marketing':'area-marketing',
+  'finance':'area-finance','product-management':'area-product-management',
+  'customer-support':'area-customer-support','design':'area-design',
+  'customer-success':'area-customer-success',
+  'operations':'area-operations'
+};
+var deptByKey = {}; DEPARTMENTS.forEach(function(d){ deptByKey[d.key] = d; });
+
+function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function dirArrow(d){ return d === 'up' ? '&uarr;' : (d === 'down' ? '&darr;' : '&bull;'); }
+function statusLabel(s){ return s === 'active' ? 'Active' : 'In Progress'; }
+function statusBadgeCls(s){ return s === 'active' ? 'badge-active' : 'badge-inprogress'; }
+
+var state = { bySkillSearch:'', bySkillArea:'sales', byKpiSearch:'', byProductSearch:'' };
+var rendered = { overview:false, 'by-skill':false, 'by-kpi':false, 'by-product':false, request:false };
+
+function countByStatus(st){ return SKILLS.filter(function(s){ return s.status === st; }).length; }
+function uniqueCaptains(){ var m = {}; SKILLS.forEach(function(s){ s.captains.forEach(function(c){ m[c] = true; }); }); return Object.keys(m).length; }
+function uniqueKpis(){ var m = {}; SKILLS.forEach(function(s){ s.kpis.forEach(function(k){ m[k] = true; }); }); return Object.keys(m).length; }
+function uniqueProducts(){ var m = {}; SKILLS.forEach(function(s){ s.products.forEach(function(p){ m[p] = true; }); }); return Object.keys(m).length; }
+function skillsForProduct(p){ return SKILLS.filter(function(s){ return s.products.indexOf(p) !== -1; }); }
+function skillsForKpi(id){ return SKILLS.filter(function(s){ return s.kpis.indexOf(id) !== -1; }); }
+
+// ---------------------------------- OVERVIEW ----------------------------------
+function buildOverview(){
+  var el = document.getElementById('section-overview');
+  var deptRows = DEPARTMENTS.map(function(d){
+    var act = SKILLS.filter(function(s){ return s.area === d.key && s.status === 'active'; }).length;
+    var prog = SKILLS.filter(function(s){ return s.area === d.key && s.status === 'in-progress'; }).length;
+    return '<div class="dept-header ' + (AREA_CLASSES[d.key]||'') + '" style="--dept-accent:var(--area);margin-bottom:0.6rem;padding:0.9rem 1.1rem">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="dept-title" style="font-size:1.1rem;margin-bottom:0.15rem">' + escapeHtml(d.name) + '</div>' +
+        '<div class="dept-desc" style="font-size:0.78rem;margin-bottom:0.35rem">' + escapeHtml(d.description) + '</div>' +
+        '<div class="dept-meta">' +
+          '<span class="pill" style="background:var(--area-bg);color:var(--area)"><strong>' + act + '</strong> active</span>' +
+          '<span class="pill"><strong>' + prog + '</strong> in progress</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="page-title">Perforce Prism Skills Catalog</div>' +
+    '<p class="page-sub">The single place to see what Prism skills exist at Perforce, what is on the way, and who owns each one. Check here before starting anything new so we are not building the same skill twice.</p>' +
+    '<div class="stat-grid">' +
+      '<div class="stat-tile"><div class="stat-val">' + countByStatus('active') + '</div><div class="stat-lbl">Active Skills</div></div>' +
+      '<div class="stat-tile"><div class="stat-val">' + countByStatus('in-progress') + '</div><div class="stat-lbl">In Progress</div></div>' +
+      '<div class="stat-tile"><div class="stat-val">' + DEPARTMENTS.length + '</div><div class="stat-lbl">Departments</div></div>' +
+    '</div>' +
+    '<h2 class="mono-label" style="margin-bottom:0.8rem">What the statuses mean</h2>' +
+    '<div class="legend">' +
+      '<div class="li"><span class="dot" style="background:var(--ok)"></span><div><strong style="color:var(--text)">Active</strong> \u2014 built, installed, and available to use today.</div></div>' +
+      '<div class="li"><span class="dot" style="background:var(--warn)"></span><div><strong style="color:var(--text)">In Progress</strong> \u2014 already being built. Listed so the work is visible and no one starts it again from scratch.</div></div>' +
+    '</div>' +
+    '<h2 class="mono-label" style="margin-bottom:0.8rem">Departments</h2>' +
+    deptRows;
+}
+
+// ---------------------------------- BY SKILL ----------------------------------
+function buildBySkill(){
+  var el = document.getElementById('section-by-skill');
+  el.innerHTML =
+    '<div class="page-title">By Skill</div>' +
+    '<p class="page-sub">Skills are organized by department. Each card shows the full record \u2014 who runs it, who its output is for, the products it serves, where it pulls data, the Skill Captains, how to trigger it, and the KPIs it can move.</p>' +
+    '<div class="area-tabs" id="bySkillTabs"></div>' +
+    '<div class="view-toolbar"><input type="text" class="search-input" id="bySkillSearch" placeholder="Filter skills..." oninput="onBySkillSearch(this.value)"></div>' +
+    '<div id="bySkillContent"></div>';
+
+  var tabsEl = document.getElementById('bySkillTabs');
+  tabsEl.innerHTML = DEPARTMENTS.map(function(d){
+    var count = SKILLS.filter(function(s){ return s.area === d.key; }).length;
+    return '<button class="area-tab" data-area="' + d.key + '" onclick="selectBySkillArea(\'' + d.key + '\')">' + escapeHtml(d.name) + '<span class="count">' + count + '</span></button>';
+  }).join('');
+
+  selectBySkillArea(state.bySkillArea);
+}
+function selectBySkillArea(key){
+  state.bySkillArea = key;
+  document.querySelectorAll('#bySkillTabs .area-tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-area') === key); });
+  renderBySkillContent();
+}
+function onBySkillSearch(q){ state.bySkillSearch = (q||'').toLowerCase(); renderBySkillContent(); }
+
+function renderBySkillContent(){
+  var content = document.getElementById('bySkillContent');
+  var d = deptByKey[state.bySkillArea];
+  if (!d) { content.innerHTML = '<div class="empty-state">No department selected</div>'; return; }
+
+  var areaCls = AREA_CLASSES[d.key] || '';
+  var q = state.bySkillSearch;
+  var list = SKILLS.filter(function(s){ return s.area === d.key; });
+  if (q){
+    list = list.filter(function(s){
+      return s.name.toLowerCase().indexOf(q) !== -1 || s.friendly.toLowerCase().indexOf(q) !== -1 ||
+             (s.summary||'').toLowerCase().indexOf(q) !== -1 || s.captains.join(' ').toLowerCase().indexOf(q) !== -1 ||
+             s.products.join(' ').toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  list = list.slice().sort(function(a,b){ if (a.status === b.status) return 0; return a.status === 'active' ? -1 : 1; });
+
+  var act = SKILLS.filter(function(s){ return s.area === d.key && s.status === 'active'; }).length;
+  var prog = SKILLS.filter(function(s){ return s.area === d.key && s.status === 'in-progress'; }).length;
+
+  var header =
+    '<div class="dept-header ' + areaCls + '" style="--dept-accent:var(--area)">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="dept-title">' + escapeHtml(d.name) + '</div>' +
+        '<div class="dept-desc">' + escapeHtml(d.description) + '</div>' +
+        '<div class="dept-meta">' +
+          '<span class="pill" style="background:var(--area-bg);color:var(--area)"><strong>' + act + '</strong> active</span>' +
+          '<span class="pill"><strong>' + prog + '</strong> in progress</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var cards = list.map(renderSkillCard).join('');
+  if (!cards) cards = '<div class="empty-state">No skills match &ldquo;' + escapeHtml(q) + '&rdquo;.</div>';
+
+  content.innerHTML = header + '<div class="card-grid">' + cards + '</div>';
+}
+
+function renderSkillCard(s){
+  var areaCls = AREA_CLASSES[s.area] || '';
+  var owners = s.captains.map(function(c){ return '<span class="pill-owner">' + escapeHtml(c) + '</span>'; }).join(' ');
+  var runs = s.who_runs.map(function(r){ return '<span class="pill-skill">' + escapeHtml(r) + '</span>'; }).join(' ');
+  var products = s.products.map(function(p){ var all = p === 'All Products' ? ' all' : ''; return '<span class="pill-product' + all + '">' + escapeHtml(p) + '</span>'; }).join(' ');
+  var sources = s.data_sources.length
+    ? s.data_sources.map(function(d){ return '<span class="pill-source">' + escapeHtml(d) + '</span>'; }).join(' ')
+    : '<span class="pill-source tbd">To be confirmed</span>';
+  var triggers = s.triggers.map(function(t){ return '<span class="pill-trigger">&ldquo;' + escapeHtml(t) + '&rdquo;</span>'; }).join(' ');
+  var kpiNames = s.kpis.map(function(k){ return KPIS[k] ? KPIS[k].name : k; });
+  var kpiHtml = kpiNames.length ? kpiNames.map(function(n){ return '<span class="pill-skill">' + escapeHtml(n) + '</span>'; }).join(' ') : '<span style="font-style:italic;color:var(--dim)">to confirm at intake</span>';
+
+  return '<div class="e-card ' + areaCls + '" style="--card-accent:var(--area)">' +
+    '<div class="e-card-head">' +
+      '<div class="e-card-title-row">' +
+        '<div><div class="e-card-title">' + escapeHtml(s.name) + '</div><div class="e-card-friendly">' + escapeHtml(s.friendly) + '</div></div>' +
+        '<span class="badge ' + statusBadgeCls(s.status) + '">' + statusLabel(s.status) + '</span>' +
+      '</div>' +
+      '<div class="e-card-meta"><span class="badge badge-area">' + escapeHtml(deptByKey[s.area] ? deptByKey[s.area].name : s.area) + '</span></div>' +
+      '<div class="e-card-summary">' + escapeHtml(s.summary) + '</div>' +
+    '</div>' +
+    '<div class="e-card-detail">' +
+      '<h4>Who runs it</h4><div class="kv-skills">' + runs + '</div>' +
+      '<h4>Intended audience (for what it creates)</h4><div>' + escapeHtml(s.audience) + '</div>' +
+      '<h4>Products</h4><div class="kv-skills">' + products + '</div>' +
+      '<h4>Data sources</h4><div class="kv-skills">' + sources + '</div>' +
+      '<h4>What it produces</h4><div class="outputs-text">' + escapeHtml(s.outputs) + '</div>' +
+      '<h4>Skill Captains</h4><div class="kv-skills">' + owners + '</div>' +
+      '<h4>How to trigger it</h4><div class="kv-skills">' + triggers + '</div>' +
+      '<h4>KPIs it can move</h4><div class="kv-skills">' + kpiHtml + '</div>' +
+      '<h4>Dates</h4>' +
+      '<div class="meta-line"><span>Launched</span><span>' + escapeHtml(s.launched) + '</span></div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ----------------------------------- BY KPI -----------------------------------
+function buildByKpi(){
+  var el = document.getElementById('section-by-kpi');
+  el.innerHTML =
+    '<div class="page-title">By KPI</div>' +
+    '<p class="page-sub">The same skills, sliced by the metrics they are positioned to move \u2014 grouped under the sales role that owns each KPI. This view reads from the same skill records; nothing is duplicated.</p>' +
+    '<div class="view-toolbar"><input type="text" class="search-input" id="byKpiSearch" placeholder="Filter KPIs..." oninput="onByKpiSearch(this.value)"></div>' +
+    '<div id="byKpiContent"></div>';
+  renderByKpiContent();
+}
+function onByKpiSearch(q){ state.byKpiSearch = (q||'').toLowerCase(); renderByKpiContent(); }
+
+function renderByKpiContent(){
+  var content = document.getElementById('byKpiContent');
+  var q = state.byKpiSearch;
+  var blocks = ROLE_ORDER.map(function(role){
+    var ids = Object.keys(KPIS).filter(function(id){
+      if (KPIS[id].role !== role) return false;
+      if (skillsForKpi(id).length === 0) return false;
+      if (!q) return true;
+      var k = KPIS[id];
+      return k.name.toLowerCase().indexOf(q) !== -1 || (k.desc||'').toLowerCase().indexOf(q) !== -1 ||
+             skillsForKpi(id).some(function(s){ return s.name.toLowerCase().indexOf(q) !== -1; });
+    });
+    if (!ids.length) return '';
+    var cards = ids.map(renderKpiCard).join('');
+    return '<div class="role-group"><div class="role-group-head"><span class="role-name">' + escapeHtml(role) + '</span></div>' +
+      '<div class="card-grid">' + cards + '</div></div>';
+  }).join('');
+  if (!blocks) blocks = '<div class="empty-state">No KPIs match this filter.</div>';
+  content.innerHTML = blocks;
+}
+function renderKpiCard(id){
+  var k = KPIS[id];
+  var typeCls = k.type === 'outcome' ? 'badge-type-outcome' : 'badge-type-throughput';
+  var list = '<ul class="kv-list">' + skillsForKpi(id).map(function(s){
+    return '<li><div class="kv-head"><span class="kv-name" style="font-family:var(--font-mono)">' + escapeHtml(s.name) + '</span>' +
+      '<span class="badge ' + statusBadgeCls(s.status) + '">' + statusLabel(s.status) + '</span></div></li>';
+  }).join('') + '</ul>';
+  return '<div class="e-card area-sales" style="--card-accent:var(--area)">' +
+    '<div class="e-card-head">' +
+      '<div class="e-card-title-row"><div class="e-card-title" style="font-family:var(--font-display)">' + escapeHtml(k.name) + '</div>' +
+        '<span class="badge ' + typeCls + '">' + k.type + '</span></div>' +
+      '<div class="e-card-meta"><span class="badge badge-dir"><span class="arrow">' + dirArrow(k.dir) + '</span> ' + escapeHtml(k.unit) + '</span></div>' +
+      '<div class="e-card-summary">' + escapeHtml(k.desc) + '</div>' +
+    '</div>' +
+    '<div class="e-card-detail"><h4>Skills that drive it</h4>' + list + '</div>' +
+  '</div>';
+}
+
+// --------------------------------- BY PRODUCT ---------------------------------
+function buildByProduct(){
+  var el = document.getElementById('section-by-product');
+  el.innerHTML =
+    '<div class="page-title">By Product</div>' +
+    '<p class="page-sub">Skills grouped by the Perforce product they currently serve. In this POC, skills are scoped to the products their Skill Captains own \u2014 this will broaden over time. Skills marked <em>All Products</em> apply across the portfolio.</p>' +
+    '<div class="view-toolbar"><input type="text" class="search-input" id="byProductSearch" placeholder="Filter by product or skill..." oninput="onByProductSearch(this.value)"></div>' +
+    '<div id="byProductContent"></div>';
+  renderByProductContent();
+}
+function onByProductSearch(q){ state.byProductSearch = (q||'').toLowerCase(); renderByProductContent(); }
+
+function renderByProductContent(){
+  var content = document.getElementById('byProductContent');
+  var q = state.byProductSearch;
+  var blocks = PRODUCTS.map(function(p){
+    var skills = skillsForProduct(p);
+    if (!skills.length) return '';
+    if (q && p.toLowerCase().indexOf(q) === -1){
+      skills = skills.filter(function(s){ return s.name.toLowerCase().indexOf(q) !== -1 || s.friendly.toLowerCase().indexOf(q) !== -1; });
+      if (!skills.length) return '';
+    }
+    var cards = skills.map(renderSkillMini).join('');
+    return '<div class="role-group"><div class="role-group-head"><span class="role-name">' + escapeHtml(p) + '</span>' +
+      '<span class="role-count">' + skills.length + ' skill' + (skills.length===1?'':'s') + '</span></div>' +
+      '<div class="card-grid">' + cards + '</div></div>';
+  }).join('');
+  if (!blocks) blocks = '<div class="empty-state">No products match this filter.</div>';
+  content.innerHTML = blocks;
+}
+function renderSkillMini(s){
+  var areaCls = AREA_CLASSES[s.area] || '';
+  var owners = s.captains.map(function(c){ return '<span class="pill-owner">' + escapeHtml(c) + '</span>'; }).join(' ');
+  return '<div class="e-card ' + areaCls + '" style="--card-accent:var(--area)">' +
+    '<div class="e-card-head">' +
+      '<div class="e-card-title-row">' +
+        '<div><div class="e-card-title">' + escapeHtml(s.name) + '</div><div class="e-card-friendly">' + escapeHtml(s.friendly) + '</div></div>' +
+        '<span class="badge ' + statusBadgeCls(s.status) + '">' + statusLabel(s.status) + '</span>' +
+      '</div>' +
+      '<div class="e-card-summary">' + escapeHtml(s.summary) + '</div>' +
+      '<div class="e-card-meta" style="margin-top:0.6rem">' + owners + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ---------------------------------- REQUEST -----------------------------------
+var SKILL_REQUEST_EMAIL = "aidan.nathanson@perforce.com";
+
+function buildRequest(){
+  var el = document.getElementById('section-request');
+  var deptOpts = DEPARTMENTS.map(function(d){ return '<option value="' + escapeHtml(d.name) + '">' + escapeHtml(d.name) + '</option>'; }).join('');
+  var productOpts = PRODUCTS.map(function(p){ return '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + '</option>'; }).join('');
+  el.innerHTML =
+    '<div class="page-title">Request Catalog Update</div>' +
+    '<p class="page-sub">Have a skill that should be in the catalog? Fill this in \u2014 it covers everything needed to add the skill record \u2014 and send it to the Project Leader.</p>' +
+    '<div class="form-grid">' +
+      '<div class="form-field"><label>Skill name (technical id, e.g. content-creation)</label><input id="rq-name" type="text" placeholder="e.g. renewal-risk-brief"></div>' +
+      '<div class="form-field"><label>Friendly display name</label><input id="rq-friendly" type="text" placeholder="e.g. Renewal Risk Brief"></div>' +
+      '<div class="form-field"><label>Your name (requestor)</label><input id="rq-requestor" type="text" placeholder="Who is requesting this"></div>' +
+      '<div class="form-field"><label>Department</label><select id="rq-area">' + deptOpts + '</select></div>' +
+      '<div class="form-field"><label>Status</label><select id="rq-status"><option value="In Progress">In Progress</option><option value="Active">Active</option></select></div>' +
+      '<div class="form-field"><label>Summary \u2014 what does it do?</label><textarea id="rq-summary" placeholder="Plain language \u2014 what it produces and why it matters."></textarea></div>' +
+      '<div class="form-field"><label>Product(s) it serves</label><select id="rq-product">' + productOpts + '</select></div>' +
+      '<div class="form-field"><label>Who runs it? (roles)</label><input id="rq-who-runs" type="text" placeholder="e.g. Account Executives, Solutions Engineers"></div>' +
+      '<div class="form-field"><label>Intended audience (who the output is for)</label><input id="rq-audience" type="text" placeholder="e.g. The prospect\u2019s evaluation team"></div>' +
+      '<div class="form-field"><label>Skill Captain(s)</label><input id="rq-captains" type="text" placeholder="Who will own validation for this skill"></div>' +
+      '<div class="form-field"><label>Data sources it would pull from</label><textarea id="rq-data" placeholder="Salesforce, Gong, a knowledge base, an uploaded file, etc. (or TBD)"></textarea></div>' +
+      '<div class="form-field"><label>What it produces (outputs)</label><textarea id="rq-outputs" placeholder="The actual deliverable \u2014 doc, spreadsheet, email, etc."></textarea></div>' +
+      '<div class="form-field"><label>Trigger prompts (how someone would kick it off)</label><textarea id="rq-triggers" placeholder="e.g. \u201cbuild a renewal risk brief for [account]\u201d (or none yet)"></textarea></div>' +
+      '<div class="form-field"><label>KPI(s) it would move</label><textarea id="rq-kpis" placeholder="Existing KPI names, or describe a new one and which role owns it."></textarea></div>' +
+      '<div class="form-field"><label>Launch / target date (optional)</label><input id="rq-launch" type="text" placeholder="e.g. planned, or a real date"></div>' +
+      '<div class="form-actions">' +
+        '<a class="btn btn-primary" href="#" onclick="return emailRequest()">Submit Email Request</a>' +
+      '</div>' +
+      '<div class="form-status" id="rq-status-msg"></div>' +
+    '</div>';
+}
+function requestText(){
+  function v(id){ var e = document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function sel(id){ var e = document.getElementById(id); return e ? e.options[e.selectedIndex].text : ''; }
+  return 'REQUEST TO ADD A SKILL\n' +
+    '=======================\n' +
+    'Skill name (id): ' + (v('rq-name') || '(untitled)') + '\n' +
+    'Friendly name: ' + (v('rq-friendly') || '-') + '\n' +
+    'Requested by: ' + (v('rq-requestor') || '(unnamed)') + '\n' +
+    'Department: ' + sel('rq-area') + '\n' +
+    'Status: ' + sel('rq-status') + '\n\n' +
+    'Summary \u2014 what it does:\n' + (v('rq-summary') || '-') + '\n\n' +
+    'Product(s) it serves: ' + sel('rq-product') + '\n\n' +
+    'Who runs it:\n' + (v('rq-who-runs') || '-') + '\n\n' +
+    'Intended audience:\n' + (v('rq-audience') || '-') + '\n\n' +
+    'Skill Captain(s):\n' + (v('rq-captains') || '-') + '\n\n' +
+    'Data sources:\n' + (v('rq-data') || '-') + '\n\n' +
+    'What it produces:\n' + (v('rq-outputs') || '-') + '\n\n' +
+    'Trigger prompts:\n' + (v('rq-triggers') || '-') + '\n\n' +
+    'KPI(s) it would move:\n' + (v('rq-kpis') || '-') + '\n\n' +
+    'Launch / target date:\n' + (v('rq-launch') || '-') + '\n';
+}
+function emailRequest(){
+  var nameEl = document.getElementById('rq-name');
+  var subject = 'Request to add a skill: ' + ((nameEl && nameEl.value.trim()) || 'new skill');
+  window.location.href = 'mailto:' + SKILL_REQUEST_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(requestText());
+  setRequestStatus('Opening your email client with the request pre-filled\u2026');
+  return false;
+}
+function setRequestStatus(msg){ var s = document.getElementById('rq-status-msg'); if (s) s.textContent = msg; }
+
+// -------------------------------- NAVIGATION ----------------------------------
+var sidebar = document.getElementById('sidebar');
+function navigateTo(section, fromHash){
+  document.querySelectorAll('.sidebar-item').forEach(function(a){ a.classList.remove('active'); });
+  var item = document.querySelector('.sidebar-item[data-section="' + section + '"]');
+  if (item) item.classList.add('active');
+  document.querySelectorAll('.section-content').forEach(function(s){ s.classList.remove('active'); });
+  var target = document.getElementById('section-' + section);
+  if (target) target.classList.add('active');
+  if (!rendered[section]){
+    rendered[section] = true;
+    if (section === 'overview') buildOverview();
+    else if (section === 'by-skill') buildBySkill();
+    else if (section === 'by-kpi') buildByKpi();
+    else if (section === 'by-product') buildByProduct();
+    else if (section === 'request') buildRequest();
+  }
+  window.scrollTo(0,0);
+  if (sidebar.classList.contains('mobile-open')) toggleMobileSidebar();
+  if (!fromHash) { try { history.pushState(null, null, '#' + section); } catch (e) { /* sandboxed/null-origin context: ignore */ } }
+}
+function toggleSidebar(){
+  if (window.innerWidth <= 768){ sidebar.classList.toggle('mobile-open'); document.getElementById('mobileBackdrop').classList.toggle('active'); }
+  else { sidebar.classList.toggle('collapsed'); }
+}
+function toggleMobileSidebar(){ sidebar.classList.toggle('mobile-open'); document.getElementById('mobileBackdrop').classList.toggle('active'); }
+window.addEventListener('hashchange', function(){ var h = location.hash.replace('#',''); if (h) navigateTo(h, true); });
+window.addEventListener('DOMContentLoaded', function(){
+  buildOverview(); rendered.overview = true;
+  var h = location.hash.replace('#',''); if (h) navigateTo(h, true);
+  var vMeta = document.querySelector('meta[name="version"]');
+  if (vMeta) document.getElementById('versionBadge').textContent = 'v' + vMeta.content;
+});
+</script>
+</body>
+</html>
