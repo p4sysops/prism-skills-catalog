@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perforce Prism Catalog</title>
 <meta name="author" content="Christopher Lind">
-<meta name="version" content="0.6">
+<meta name="version" content="0.7">
 <meta name="description" content="Perforce Prism Catalog — what skills and agents exist, what's in progress, and who owns them.">
 <meta name="robots" content="noindex, nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -478,6 +478,58 @@ var SKILLS = [
     outputs:"A Word handoff brief covering deal context, plus a drafted AE gap email when information is missing.",
     triggers:["sales handoff for [customer]","handoff questionnaire","onboarding handoff"]
   },
+  // ---- CUSTOMER SUCCESS: Wave 2 in-progress skills ----
+  {
+    name:"customer-risk",
+    friendly:"Customer Risk",
+    areas:["customer-success"],
+    status:"in-progress",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Builds a predictive model to identify customers that may not renew based on historical data.",
+    products:[],
+    who_runs:["Customer Success Managers"],
+    audience:"Customer Success Managers and leadership identifying at-risk accounts ahead of renewal.",
+    captains:["TBD"],
+    launched:"Sep 18, 2026 (planned)",
+    data_sources:[],
+    outputs:"To be confirmed.",
+    triggers:["/customer-risk"]
+  },
+  {
+    name:"customer-pain",
+    friendly:"Customer Pain",
+    areas:["customer-success"],
+    status:"in-progress",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Identifies customers showing indicators of additional pain points to uncover expansion and cross-sell opportunities.",
+    products:[],
+    who_runs:["Customer Success Managers"],
+    audience:"Customer Success Managers and Account Executives identifying expansion and cross-sell signals.",
+    captains:["TBD"],
+    launched:"Sep 18, 2026 (planned)",
+    data_sources:[],
+    outputs:"To be confirmed.",
+    triggers:["/customer-pain"]
+  },
+  {
+    name:"customer-value",
+    friendly:"Customer Value",
+    areas:["customer-success"],
+    status:"in-progress",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Helps teams identify value-based use cases and business cases, quantify the impact, and determine which discovery questions to ask.",
+    products:[],
+    who_runs:["Customer Success Managers"],
+    audience:"Customer Success Managers and Account Executives building value narratives and business cases.",
+    captains:["TBD"],
+    launched:"Sep 18, 2026 (planned)",
+    data_sources:[],
+    outputs:"To be confirmed.",
+    triggers:["/customer-value"]
+  },
   {
     name:"brand-governance",
     friendly:"Brand Governance",
@@ -703,39 +755,21 @@ var SKILLS = [
     triggers:["/feature-demand"]
   },
   {
-    name:"deal-prioritization",
-    friendly:"Business Context & Deal Prioritization",
+    name:"market-actors",
+    friendly:"Market Actors",
     areas:["product-management"],
     status:"in-progress",
     kind:"Skill",
     platform:"Claude",
-    summary:"Links feature asks to pipeline data so product can rank on revenue impact and prioritize accordingly.",
+    summary:"Provides Product Management with an evidence-backed view of meaningful external-market changes, emerging actors, changing buyer expectations, and potential product opportunities or risks.",
     products:["All Products"],
     who_runs:["Product Managers"],
-    audience:"Product Managers prioritizing features for pipeline and revenue impact.",
+    audience:"Product Managers tracking market dynamics, competitive shifts, and evolving buyer expectations to inform roadmap and strategy.",
     captains:["Geeta Zanvar","Johan Karlsson"],
     launched:"Sep 18, 2026 (planned)",
-    data_sources:["Gong","Jira","Salesforce"],
+    data_sources:[],
     outputs:"To be confirmed.",
-    triggers:["/deal-prioritization"]
-  },
-
-  {
-    name:"competitive-momentum",
-    friendly:"Competitive Momentum",
-    areas:["product-management"],
-    status:"in-progress",
-    kind:"Skill",
-    platform:"Claude",
-    summary:"Tracks which competitors are appearing in deals and whether frequency is trending.",
-    products:["All Products"],
-    who_runs:["Product Managers","Sales"],
-    audience:"Product Managers and Sales tracking competitive dynamics across the pipeline.",
-    captains:["Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:["Salesforce","Gong"],
-    outputs:"To be confirmed.",
-    triggers:["/competitive-momentum"]
+    triggers:["/market-actors"]
   }
 ];
 
