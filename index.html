@@ -184,7 +184,7 @@
   .badge-platform-copilot{background:var(--s2-bg);color:var(--s2)}
   .pill-skill{font-family:var(--font-mono);font-size:0.66rem;font-weight:400;padding:3px 7px;border-radius:4px;background:var(--surface2);color:var(--muted);display:inline-block}
   .pill-product{font-size:0.68rem;font-weight:400;padding:3px 9px;border-radius:20px;background:var(--brand-bg);color:var(--brand);display:inline-block}
-  .pill-product.all{background:var(--surface2);color:var(--muted)}
+  .pill-product.all, .pill-product.general{background:var(--surface2);color:var(--muted)}
   .pill-source{font-size:0.68rem;padding:3px 8px;border-radius:4px;background:var(--surface2);color:var(--muted);display:inline-block}
   .pill-source.tbd{font-style:italic;color:var(--dim);border:1px dashed var(--border);background:transparent}
   .pill-trigger{font-family:var(--font-mono);font-size:0.66rem;padding:3px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
@@ -394,9 +394,10 @@
 // ============================ SINGLE SOURCE OF TRUTH ============================
 // Every view reads from these structures. Add a skill or agent = add one record below.
 
-// Controlled product list (display names). "All Products" is first.
+// Controlled product list (display names). "All Products" is first, then "General".
 var PRODUCTS = [
   "All Products",
+  "General",
   "Akana","Components","Gliffy","JRebel","OpenLogic","Zend",
   "P4 Plan","P4","ALM","IPLM",
   "Puppet","Delphix",
@@ -478,6 +479,23 @@ var SKILLS = [
     outputs:"A Word handoff brief covering deal context, plus a drafted AE gap email when information is missing.",
     triggers:["sales handoff for [customer]","handoff questionnaire","onboarding handoff"]
   },
+  {
+    name:"delphix-realized-roi-calculator",
+    friendly:"Delphix Realized ROI Calculator",
+    areas:["customer-success"],
+    status:"active",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Builds a defensible, customer-facing ROI story for Delphix data virtualization.",
+    products:["Delphix"],
+    who_runs:["Customer Success Managers"],
+    audience:"Customer Success Managers presenting realized value to Delphix customers.",
+    captains:["Rahul Gupta"],
+    launched:"Sep 30, 2026",
+    data_sources:["Gainsight","Delphix Usage Data"],
+    outputs:"An Excel workbook (scenario comparison, model detail, and color-coded assumptions by data tier) and a single-page PowerPoint or PDF one-pager.",
+    triggers:[]
+  },
   // ---- CUSTOMER SUCCESS: Wave 2 in-progress skills ----
   {
     name:"customer-risk",
@@ -531,71 +549,71 @@ var SKILLS = [
     triggers:["/customer-value"]
   },
   {
-    name:"brand-governance",
-    friendly:"Brand Governance",
+    name:"brand-review",
+    friendly:"Brand Review",
     areas:["marketing"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Enforces consistent brand voice and style across marketing content, including tone, terminology, and copy standards.",
-    products:["All Products"],
+    products:["General"],
     who_runs:["Content Marketers","Marketing Managers"],
     audience:"Content Marketer",
     captains:["Erin Hofstrom"],
-    launched:"\u2014 (planned)",
-    data_sources:[],
-    outputs:"Brand-compliant marketing copy \u2014 content reviewed and adjusted for tone, terminology, and style consistency before it ships.",
+    launched:"Sep 30, 2026",
+    data_sources:["Marketing Resources Center"],
+    outputs:"A report for any external-facing Perforce content, in one of two formats: an inline annotated version or a downloadable Word doc with tracked changes.",
     triggers:[]
   },
   {
     name:"content-creation",
     friendly:"Content Creation",
     areas:["marketing"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Creates marketing content across email, landing pages, blogs, and social using templates and brand guidelines.",
-    products:["All Products"],
+    products:["General"],
     who_runs:["Content Team","Growth Marketers"],
     audience:"Content team, growth marketers",
     captains:["Beth Hanson"],
-    launched:"\u2014 (planned)",
-    data_sources:[],
-    outputs:"Ready-to-publish marketing content \u2014 email, landing page, blog, and social copy built from templates and brand guidelines.",
+    launched:"Sep 30, 2026",
+    data_sources:["Marketing Resources Center"],
+    outputs:"Draft marketing content delivered as a Word document using the correct Perforce-branded template.",
     triggers:[]
   },
   {
     name:"sku-intake",
     friendly:"SKU Intake",
     areas:["operations"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Automates SKU requirements intake, eliminating manual spreadsheet entry and back-and-forth clarification cycles.",
-    products:["All Products"],
+    products:["General"],
     who_runs:["Product Managers"],
     audience:"Internal \u2014 the teams that process and approve new SKUs.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
-    launched:"\u2014 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
+    launched:"Sep 30, 2026",
+    data_sources:["Salesforce"],
+    outputs:"A two-part handoff package \u2014 a brief summary to paste and a CSV with structured field data to attach to the JIRA.",
     triggers:[]
   },
   {
-    name:"sku-hand-off",
-    friendly:"SKU Hand-Off",
+    name:"sku-salesforce-handoff",
+    friendly:"SKU Salesforce Handoff",
     areas:["operations"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Streamlines hand-off to SKU teams by auto-validating requirement completeness, cutting review time and rework.",
-    products:["All Products"],
+    products:["General"],
     who_runs:["Product Managers"],
     audience:"Internal \u2014 the SKU teams receiving the hand-off.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
-    launched:"\u2014 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
+    launched:"Sep 30, 2026",
+    data_sources:["Salesforce"],
+    outputs:"Salesforce-ready CSV files for a BizApps admin to load via Data Loader.",
     triggers:[]
   },
   {
@@ -737,20 +755,20 @@ var SKILLS = [
     triggers:["/win-loss-story"]
   },
   {
-    name:"campaign-planning",
-    friendly:"Campaign Planning",
+    name:"campaign-planner",
+    friendly:"Campaign Planner",
     areas:["marketing"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Develops campaign strategy and execution plans grounded in market and pipeline data.",
-    products:["All Products"],
+    products:["General"],
     who_runs:["Marketing"],
     audience:"Campaign managers and growth marketers building execution plans.",
     captains:["Beth Hanson"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
+    launched:"Sep 30, 2026",
+    data_sources:["Marketing Resources Center"],
+    outputs:"A Word document campaign brief.",
     triggers:["/campaign-planning"]
   },
   // ---- PRODUCT: Wave 2 in-progress skills ----
@@ -994,7 +1012,7 @@ function renderSkillCard(s){
   var detail = '';
   if (s.status === 'active') {
     var runs = s.who_runs.map(function(r){ return '<span class="pill-skill">' + escapeHtml(r) + '</span>'; }).join(' ');
-    var products = s.products.map(function(p){ var all = p === 'All Products' ? ' all' : ''; return '<span class="pill-product' + all + '">' + escapeHtml(p) + '</span>'; }).join(' ');
+    var products = s.products.map(function(p){ var all = p === 'All Products' ? ' all' : (p === 'General' ? ' general' : ''); return '<span class="pill-product' + all + '">' + escapeHtml(p) + '</span>'; }).join(' ');
     var sources = s.data_sources.length
       ? s.data_sources.map(function(d){ return '<span class="pill-source">' + escapeHtml(d) + '</span>'; }).join(' ')
       : '<span class="pill-source tbd">To be confirmed</span>';
@@ -1033,7 +1051,7 @@ function buildByProduct(){
   var el = document.getElementById('section-by-product');
   el.innerHTML =
     '<h1 class="page-title">By Product</h1>' +
-    '<p class="page-sub">Skills and agents grouped by the Perforce product they currently serve. Select a product to filter \u2014 no more scrolling through every product. Items marked <em>All Products</em> apply across the portfolio.</p>' +
+    '<p class="page-sub">Skills and agents grouped by the Perforce product they currently serve. Select a product to filter \u2014 no more scrolling through every product. Items marked <em>All Products</em> or <em>General</em> apply across the portfolio.</p>' +
     '<div class="area-tabs area-tabs-compact" id="byProductTabs"></div>' +
     '<div class="view-toolbar"><label for="byProductSearch" class="visually-hidden">Filter by name</label><input type="text" class="search-input" id="byProductSearch" placeholder="Filter by name..." oninput="onByProductSearch(this.value)"></div>' +
     '<div id="byProductContent"></div>';
