@@ -175,6 +175,8 @@
   .pill-source.tbd{font-style:italic;color:var(--dim);border:1px dashed var(--border);background:transparent}
   .pill-trigger{font-family:var(--font-mono);font-size:var(--fs-sm);padding:3px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
   .pill-owner{font-size:var(--fs-sm);padding:2px 8px;border-radius:20px;background:var(--brand-bg);color:var(--brand);font-weight:400}
+  .skill-notice{background:var(--surface2);border-left:3px solid var(--brand);border-radius:4px;padding:0.55rem 0.75rem;font-size:var(--fs-sm);color:var(--muted);line-height:1.5}
+  .skill-notice strong{display:block;font-size:var(--fs-xs);font-weight:600;color:var(--dim);margin-bottom:0.15rem}
   .outputs-text{font-size:var(--fs-base);color:var(--muted);line-height:1.5}
 
   .gs-prose{font-size:var(--fs-base);color:var(--muted);line-height:1.65;margin-bottom:0.75rem;max-width:680px}
@@ -380,7 +382,7 @@
 // ============================ SINGLE SOURCE OF TRUTH ============================
 // Every view reads from these structures. Add a skill or agent = add one record below.
 
-// Controlled product list (display names). "All Products" is first, then "General".
+// Controlled product list (display names). "All Products" is first, then "General" (reserved for non-product skills).
 var PRODUCTS = [
   "All Products",
   "General",
@@ -388,13 +390,13 @@ var PRODUCTS = [
   "P4 Plan","P4","ALM","IPLM",
   "Puppet","Delphix",
   "BlazeMeter","Perfecto",
-  "Perforce QAC","Perforce Klocwork"
+  "QAC","Klocwork"
 ];
 
 // Groups of products that should be presented as a single bucket in the
 // "By Product" tabs (skills still tag their individual product underneath).
 var PRODUCT_GROUPS = {
-  "Static Analysis": ["Perforce QAC","Perforce Klocwork"]
+  "Static Analysis": ["QAC","Klocwork"]
 };
 function productGroupFor(p){
   var found = null;
@@ -456,7 +458,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Provides a handoff brief on demand to ensure CSMs/TAMs have what they need for a successful transition from Sales.",
-    products:["Delphix","Perfecto","BlazeMeter","P4","Perforce QAC","Perforce Klocwork","Puppet"],
+    products:["Delphix","Perfecto","BlazeMeter","P4","QAC","Klocwork","Puppet"],
     who_runs:["Customer Success Managers","Technical Account Managers"],
     audience:"Internal \u2014 the CSM/TAM team receiving the newly closed account.",
     captains:["Mimi Benach","Mendi Short"],
@@ -482,57 +484,73 @@ var SKILLS = [
     outputs:"An Excel workbook (scenario comparison, model detail, and color-coded assumptions by data tier) and a single-page PowerPoint or PDF one-pager.",
     triggers:[]
   },
-  // ---- CUSTOMER SUCCESS: Wave 2 in-progress skills ----
-  {
-    name:"customer-risk",
-    friendly:"Customer Risk",
-    areas:["customer-success"],
-    status:"in-progress",
-    kind:"Skill",
-    platform:"Claude",
-    summary:"Builds a predictive model to identify customers that may not renew based on historical data.",
-    products:[],
-    who_runs:["Customer Success Managers"],
-    audience:"Customer Success Managers and leadership identifying at-risk accounts ahead of renewal.",
-    captains:["Mimi Benach"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
-    triggers:["/customer-risk"]
-  },
   {
     name:"customer-pain",
     friendly:"Customer Pain",
     areas:["customer-success"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
-    summary:"Identifies customers showing indicators of additional pain points to uncover expansion and cross-sell opportunities.",
-    products:[],
-    who_runs:["Customer Success Managers"],
-    audience:"Customer Success Managers and Account Executives identifying expansion and cross-sell signals.",
+    summary:"Surfaces customer pain points from recorded Gong calls and maps each to the Perforce product and capabilities that could address it, uncovering expansion and cross-sell opportunities.",
+    products:["All Products"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 CSMs and TAMs identifying expansion and cross-sell signals across their accounts.",
     captains:["Walter Guerrero"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
-    triggers:["/customer-pain"]
+    launched:"Oct 2026",
+    data_sources:["Gong", "Salesforce", "Gainsight"],
+    outputs:"An Excel workbook with one row per pain point \u2014 the mapped Perforce product and capabilities, whether the client already owns it, the covering success plan, and action items.",
+    triggers:["run customer pain report", "pull pain points for [account]", "pain report for [CSM name]"]
   },
   {
-    name:"customer-value",
-    friendly:"Customer Value",
+    name:"riskenator-lite",
+    friendly:"Riskenator Lite",
     areas:["customer-success"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
-    summary:"Helps teams identify value-based use cases and business cases, quantify the impact, and determine which discovery questions to ask.",
-    products:[],
-    who_runs:["Customer Success Managers"],
-    audience:"Customer Success Managers and Account Executives building value narratives and business cases.",
+    summary:"Lists a CSM's flagged at-risk renewals for a chosen timeframe, pairing Salesforce risk levels with Gainsight and Gong context.",
+    products:["BlazeMeter", "Perfecto", "Delphix", "P4", "QAC", "Klocwork", "Puppet"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 each CSM or TAM reviewing the renewals on their own book.",
+    captains:["Mimi Benach"],
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gainsight", "Gong"],
+    outputs:"A single HTML report of flagged renewals with account, opportunity, renewal date, TCV and ACV, Salesforce risk level, Gainsight updates, recent Gong calls, and mitigation comments.",
+    triggers:["my at-risk renewals", "what's risky on my accounts next 60 days", "renewals I should worry about this quarter"]
+  },
+  {
+    name:"value-brief-lite",
+    friendly:"Value Brief Lite",
+    areas:["customer-success"],
+    status:"active",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Creates a fast, sourced customer brief for a cadence call or renewal, covering contracts, open cases, and account risk.",
+    products:["All Products"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 CSMs and TAMs preparing for a cadence call or renewal conversation.",
     captains:["Keith Puzey"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
-    triggers:["/customer-value"]
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gainsight", "Gong"],
+    outputs:"A Markdown brief with active ACV, products, open Perforce-owned support cases, success plans, and recent call themes, each fact labeled by source and as-of date.",
+    triggers:["value brief for [customer]", "cadence call prep for [customer]", "renewal prep for [customer]"]
+  },
+  {
+    name:"value-meal-lite",
+    friendly:"Value Meal Lite",
+    areas:["customer-success"],
+    status:"active",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Creates an evidence-led QBR report for a customer, adding bounded product telemetry to the account, support, and success data.",
+    products:["All Products"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 CSMs and TAMs preparing a QBR or focused account review.",
+    captains:["Keith Puzey"],
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gainsight", "Gong", "BlazeMeter Telemetry", "Delphix Usage Data"],
+    outputs:"A Markdown QBR report with contracts, open cases, success plans, and 12 months of BlazeMeter and Delphix usage, each fact labeled by source and as-of date.",
+    triggers:["value meal for [customer]", "QBR prep for [customer]", "QBR report for [customer]"]
   },
   {
     name:"brand-review",
@@ -542,7 +560,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Enforces consistent brand voice and style across marketing content, including tone, terminology, and copy standards.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Content Marketers","Marketing Managers"],
     audience:"Content Marketer",
     captains:["Erin Hofstrom"],
@@ -559,7 +577,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Creates marketing content across email, landing pages, blogs, and social using templates and brand guidelines.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Content Team","Growth Marketers"],
     audience:"Content team, growth marketers",
     captains:["Beth Hanson"],
@@ -576,7 +594,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Automates SKU requirements intake, eliminating manual spreadsheet entry and back-and-forth clarification cycles.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Product Managers"],
     audience:"Internal \u2014 the teams that process and approve new SKUs.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
@@ -593,7 +611,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Streamlines hand-off to SKU teams by auto-validating requirement completeness, cutting review time and rework.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Product Managers"],
     audience:"Internal \u2014 the SKU teams receiving the hand-off.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
@@ -614,7 +632,8 @@ var SKILLS = [
     who_runs:["Sales Operations"],
     audience:"Internal \u2014 sales operations and the teams affected by the role change.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
-    launched:"\u2014 (planned)",
+    launched:"TBD (planned)",
+    expected_launch:"TBD",
     data_sources:[],
     outputs:"To be confirmed.",
     triggers:[]
@@ -632,7 +651,8 @@ var SKILLS = [
     who_runs:["Sales","Customer Success"],
     audience:"Account Executives and Customer Success Managers preparing for QBRs and business reviews.",
     captains:["Chelsea Teplitzky"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/customer-kpi-scorecard"]
@@ -641,18 +661,18 @@ var SKILLS = [
     name:"account-research",
     friendly:"Account Research",
     areas:["sales"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Synthesizes account intelligence for pre-call prep, giving reps a complete picture before engaging.",
     products:["All Products"],
-    who_runs:["Sales"],
+    who_runs:["Sales","Sales Development"],
     audience:"Account Executives preparing for prospect or customer calls.",
     captains:["Adam Albrecht"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:["Salesforce","Gong","6Sense","Web"],
-    outputs:"To be confirmed.",
-    triggers:["/account-research"]
+    launched:"Oct 2026",
+    data_sources:["Salesforce","6Sense","Web"],
+    outputs:"An account research brief covering company overview, Perforce relationship, key contacts, hiring and intent signals, pain points, a recommended action, and discovery questions.",
+    triggers:["research [company]","pull an account brief for [company]","who should I contact at [company]"]
   },
   {
     name:"path-to-plan",
@@ -666,7 +686,8 @@ var SKILLS = [
     who_runs:["Sales"],
     audience:"Account Executives managing complex, multi-stakeholder deals.",
     captains:["Curtis Bowcutt","Chris Ganacoplos"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/path-to-plan"]
@@ -682,8 +703,9 @@ var SKILLS = [
     products:["All Products"],
     who_runs:["Sales"],
     audience:"Account Executives and their buyer-side champions co-managing a deal timeline.",
-    captains:["Curtis Bowcutt","Chris Ganacoplos"],
-    launched:"Sep 18, 2026 (planned)",
+    captains:["Curtis Bowcutt"],
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/mutual-action-plan"]
@@ -700,7 +722,8 @@ var SKILLS = [
     who_runs:["Sales Engineers","Sales"],
     audience:"The prospect and the internal deal team \u2014 the slide and talking points support a live opportunity.",
     captains:["Johnny Lam","Nico Kruger"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/roi-story"]
@@ -709,7 +732,7 @@ var SKILLS = [
   {
     name:"win-loss-report",
     friendly:"Win/Loss Report",
-    areas:["marketing","product-management"],
+    areas:["product-management"],
     status:"in-progress",
     kind:"Skill",
     platform:"Claude",
@@ -717,28 +740,30 @@ var SKILLS = [
     products:["All Products"],
     who_runs:["Marketing","Product Marketing","Product Managers"],
     audience:"Marketing and Product teams analyzing deal outcomes to sharpen positioning and roadmap decisions.",
-    captains:["Chris Perez","Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
+    captains:["Geeta Zanvar","Johan Karlsson"],
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/win-loss-report"]
   },
   {
-    name:"win-loss-story",
-    friendly:"Win/Loss Story",
-    areas:["marketing","product-management"],
-    status:"in-progress",
+    name:"win-story",
+    friendly:"Win Story",
+    areas:["marketing"],
+    status:"active",
     kind:"Skill",
     platform:"Claude",
-    summary:"Creates concise win or loss deal stories to explain why priority deals were won or lost and inform sales enablement, product decisions, and leadership visibility.",
+    summary:"Generates a single-slide win story that explains why a new-logo deal was won, for sales enablement, product decisions, and leadership visibility.",
     products:["All Products"],
-    who_runs:["Marketing","Product Marketing","Product Managers"],
-    audience:"Marketing and Product teams analyzing deal outcomes to sharpen positioning and roadmap decisions.",
-    captains:["Chris Perez","Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:["Salesforce","Gong"],
-    outputs:"To be confirmed.",
-    triggers:["/win-loss-story"]
+    who_runs:["Product Marketing", "Product Managers"],
+    audience:"Internal \u2014 PMMs and Product Managers documenting wins; output is reviewed by a PMM before wider use.",
+    captains:["Ann Rosen"],
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gong"],
+    outputs:"A single-slide PowerPoint win story for PMM review, with an optional sources document tracing every data point.",
+    notice:"Managed peer to peer rather than at the organization level. Reach out to Ann Rosen if you need access.",
+    triggers:["create a win story for [customer]", "show me recent [brand] wins", "/win-story"]
   },
   {
     name:"campaign-planner",
@@ -748,7 +773,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Develops campaign strategy and execution plans grounded in market and pipeline data.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Marketing"],
     audience:"Campaign managers and growth marketers building execution plans.",
     captains:["Beth Hanson"],
@@ -770,7 +795,8 @@ var SKILLS = [
     who_runs:["Product Managers"],
     audience:"Product Managers and leadership synthesizing voice-of-customer signal.",
     captains:["Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"TBD (planned)",
+    expected_launch:"TBD",
     data_sources:["Gong","Jira"],
     outputs:"To be confirmed.",
     triggers:["/feature-demand"]
@@ -787,7 +813,8 @@ var SKILLS = [
     who_runs:["Product Managers"],
     audience:"Product Managers tracking market dynamics, competitive shifts, and evolving buyer expectations to inform roadmap and strategy.",
     captains:["Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"TBD (planned)",
+    expected_launch:"TBD",
     data_sources:[],
     outputs:"To be confirmed.",
     triggers:["/competitive-research"]
@@ -839,16 +866,23 @@ function statusBadgeCls(s){ return s === 'active' ? 'badge-active' : 'badge-inpr
 function kindBadgeCls(k){ return k === 'Agent' ? 'badge-kind-agent' : 'badge-kind-skill'; }
 function platformBadgeCls(p){ return p === 'Copilot' ? 'badge-platform-copilot' : 'badge-platform-claude'; }
 
-var state = { bySkillSearch:'', bySkillArea:'all', bySkillStatus:'all', byProductTab:'All Products', byProductSearch:'' };
+var state = { bySkillSearch:'', bySkillArea:'all', bySkillStatus:'all', byProductTab:'All Skills', byProductSearch:'' };
 var rendered = { overview:false, 'by-skill':false, 'by-product':false, request:false, idea:false };
 
 function skillInArea(s, key){ return key === 'all' || s.areas.indexOf(key) !== -1; }
 function countByStatus(st){ return SKILLS.filter(function(s){ return s.status === st; }).length; }
 function skillsForProduct(p){
-  if (p === 'All Products') return SKILLS.slice();
-  var members = PRODUCT_GROUPS[p];
-  if (members) return SKILLS.filter(function(s){ return s.products.some(function(sp){ return members.indexOf(sp) !== -1; }); });
-  return SKILLS.filter(function(s){ return s.products.indexOf(p) !== -1; });
+  if (p === 'All Skills') return SKILLS.slice();
+  var members = PRODUCT_GROUPS[p] || [p];
+  return SKILLS.filter(function(s){
+    if (s.products.some(function(sp){ return members.indexOf(sp) !== -1; })) return true;
+    // "All Products" skills appear on every product tab; "General" is reserved for non-product skills.
+    return p !== 'General' && s.products.indexOf('All Products') !== -1;
+  });
+}
+function hasExplicitProduct(p){
+  var members = PRODUCT_GROUPS[p] || [p];
+  return SKILLS.some(function(s){ return s.products.some(function(sp){ return members.indexOf(sp) !== -1; }); });
 }
 
 // ---------------------------------- OVERVIEW ----------------------------------
@@ -1005,15 +1039,16 @@ function renderSkillCard(s){
       ? s.data_sources.map(function(d){ return '<span class="pill-source">' + escapeHtml(d) + '</span>'; }).join(' ')
       : '<span class="pill-source tbd">To be confirmed</span>';
     detail =
+      (s.notice ? '<div class="skill-notice"><strong>Access</strong>' + escapeHtml(s.notice) + '</div>' : '') +
       '<h4>Audience</h4><div class="kv-skills">' + runs + '</div>' +
-      '<h4>Products</h4><div class="kv-skills">' + products + '</div>' +
+      (s.products.length ? '<h4>Products</h4><div class="kv-skills">' + products + '</div>' : '') +
       '<h4>Data sources</h4><div class="kv-skills">' + sources + '</div>' +
       '<h4>What it produces</h4><div class="outputs-text">' + escapeHtml(s.outputs) + '</div>' +
       '<h4>Skill Captains</h4><div class="kv-skills">' + owners + '</div>';
   } else {
     detail =
       '<h4>Skill Captain</h4><div class="kv-skills">' + owners + '</div>' +
-      '<h4>Expected Launch Date</h4><div class="meta-line"><span>September 18, 2026</span></div>';
+      '<h4>Expected Launch Date</h4><div class="meta-line"><span>' + escapeHtml(s.expected_launch || 'TBD') + '</span></div>';
   }
 
 
@@ -1039,13 +1074,13 @@ function buildByProduct(){
   var el = document.getElementById('section-by-product');
   el.innerHTML =
     '<h1 class="page-title">By Product</h1>' +
-    '<p class="page-sub">Skills and agents grouped by the Perforce product they currently serve. Select a product to filter \u2014 no more scrolling through every product. Items marked <em>All Products</em> or <em>General</em> apply across the portfolio.</p>' +
+    '<p class="page-sub">Skills and agents grouped by the Perforce product they currently serve. Select a product to filter \u2014 no more scrolling through every product. Skills marked <em>All Products</em> apply across the portfolio and appear under every product.</p>' +
     '<div class="area-tabs area-tabs-compact" id="byProductTabs"></div>' +
     '<div class="view-toolbar"><label for="byProductSearch" class="visually-hidden">Filter by name</label><input type="text" class="search-input" id="byProductSearch" placeholder="Filter by name..." oninput="onByProductSearch(this.value)"></div>' +
     '<div id="byProductContent"></div>';
 
   var tabsEl = document.getElementById('byProductTabs');
-  var productsWithSkills = displayProductList().filter(function(p){ return skillsForProduct(p).length > 0; });
+  var productsWithSkills = ['All Skills'].concat(displayProductList().filter(function(p){ return p !== 'All Products' && hasExplicitProduct(p); }));
   tabsEl.innerHTML = productsWithSkills.map(function(p){
     var count = skillsForProduct(p).length;
     var members = PRODUCT_GROUPS[p];
