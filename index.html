@@ -175,6 +175,8 @@
   .pill-source.tbd{font-style:italic;color:var(--dim);border:1px dashed var(--border);background:transparent}
   .pill-trigger{font-family:var(--font-mono);font-size:var(--fs-sm);padding:3px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
   .pill-owner{font-size:var(--fs-sm);padding:2px 8px;border-radius:20px;background:var(--brand-bg);color:var(--brand);font-weight:400}
+  .skill-notice{background:var(--surface2);border-left:3px solid var(--brand);border-radius:4px;padding:0.55rem 0.75rem;font-size:var(--fs-sm);color:var(--muted);line-height:1.5}
+  .skill-notice strong{display:block;font-size:var(--fs-xs);font-weight:600;color:var(--dim);margin-bottom:0.15rem}
   .outputs-text{font-size:var(--fs-base);color:var(--muted);line-height:1.5}
 
   .gs-prose{font-size:var(--fs-base);color:var(--muted);line-height:1.65;margin-bottom:0.75rem;max-width:680px}
@@ -380,7 +382,7 @@
 // ============================ SINGLE SOURCE OF TRUTH ============================
 // Every view reads from these structures. Add a skill or agent = add one record below.
 
-// Controlled product list (display names). "All Products" is first, then "General".
+// Controlled product list (display names). "All Products" is first, then "General" (reserved for non-product skills).
 var PRODUCTS = [
   "All Products",
   "General",
@@ -558,7 +560,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Enforces consistent brand voice and style across marketing content, including tone, terminology, and copy standards.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Content Marketers","Marketing Managers"],
     audience:"Content Marketer",
     captains:["Erin Hofstrom"],
@@ -575,7 +577,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Creates marketing content across email, landing pages, blogs, and social using templates and brand guidelines.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Content Team","Growth Marketers"],
     audience:"Content team, growth marketers",
     captains:["Beth Hanson"],
@@ -592,7 +594,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Automates SKU requirements intake, eliminating manual spreadsheet entry and back-and-forth clarification cycles.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Product Managers"],
     audience:"Internal \u2014 the teams that process and approve new SKUs.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
@@ -609,7 +611,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Streamlines hand-off to SKU teams by auto-validating requirement completeness, cutting review time and rework.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Product Managers"],
     audience:"Internal \u2014 the SKU teams receiving the hand-off.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
@@ -630,7 +632,8 @@ var SKILLS = [
     who_runs:["Sales Operations"],
     audience:"Internal \u2014 sales operations and the teams affected by the role change.",
     captains:["Lindsay Riesbeck","Hunter Adcock"],
-    launched:"\u2014 (planned)",
+    launched:"TBD (planned)",
+    expected_launch:"TBD",
     data_sources:[],
     outputs:"To be confirmed.",
     triggers:[]
@@ -648,7 +651,8 @@ var SKILLS = [
     who_runs:["Sales","Customer Success"],
     audience:"Account Executives and Customer Success Managers preparing for QBRs and business reviews.",
     captains:["Chelsea Teplitzky"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/customer-kpi-scorecard"]
@@ -682,7 +686,8 @@ var SKILLS = [
     who_runs:["Sales"],
     audience:"Account Executives managing complex, multi-stakeholder deals.",
     captains:["Curtis Bowcutt","Chris Ganacoplos"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/path-to-plan"]
@@ -699,7 +704,8 @@ var SKILLS = [
     who_runs:["Sales"],
     audience:"Account Executives and their buyer-side champions co-managing a deal timeline.",
     captains:["Curtis Bowcutt"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/mutual-action-plan"]
@@ -716,7 +722,8 @@ var SKILLS = [
     who_runs:["Sales Engineers","Sales"],
     audience:"The prospect and the internal deal team \u2014 the slide and talking points support a live opportunity.",
     captains:["Johnny Lam","Nico Kruger"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/roi-story"]
@@ -725,7 +732,7 @@ var SKILLS = [
   {
     name:"win-loss-report",
     friendly:"Win/Loss Report",
-    areas:["marketing","product-management"],
+    areas:["product-management"],
     status:"in-progress",
     kind:"Skill",
     platform:"Claude",
@@ -733,8 +740,9 @@ var SKILLS = [
     products:["All Products"],
     who_runs:["Marketing","Product Marketing","Product Managers"],
     audience:"Marketing and Product teams analyzing deal outcomes to sharpen positioning and roadmap decisions.",
-    captains:["Chris Perez","Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
+    captains:["Geeta Zanvar","Johan Karlsson"],
+    launched:"Nov 4, 2026 (planned)",
+    expected_launch:"November 4, 2026",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
     triggers:["/win-loss-report"]
@@ -754,6 +762,7 @@ var SKILLS = [
     launched:"Oct 2026",
     data_sources:["Salesforce", "Gong"],
     outputs:"A single-slide PowerPoint win story for PMM review, with an optional sources document tracing every data point.",
+    notice:"Managed peer to peer rather than at the organization level. Reach out to Ann Rosen if you need access.",
     triggers:["create a win story for [customer]", "show me recent [brand] wins", "/win-story"]
   },
   {
@@ -764,7 +773,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Develops campaign strategy and execution plans grounded in market and pipeline data.",
-    products:["General"],
+    products:["All Products"],
     who_runs:["Marketing"],
     audience:"Campaign managers and growth marketers building execution plans.",
     captains:["Beth Hanson"],
@@ -786,7 +795,8 @@ var SKILLS = [
     who_runs:["Product Managers"],
     audience:"Product Managers and leadership synthesizing voice-of-customer signal.",
     captains:["Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"TBD (planned)",
+    expected_launch:"TBD",
     data_sources:["Gong","Jira"],
     outputs:"To be confirmed.",
     triggers:["/feature-demand"]
@@ -803,7 +813,8 @@ var SKILLS = [
     who_runs:["Product Managers"],
     audience:"Product Managers tracking market dynamics, competitive shifts, and evolving buyer expectations to inform roadmap and strategy.",
     captains:["Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
+    launched:"TBD (planned)",
+    expected_launch:"TBD",
     data_sources:[],
     outputs:"To be confirmed.",
     triggers:["/competitive-research"]
@@ -855,16 +866,23 @@ function statusBadgeCls(s){ return s === 'active' ? 'badge-active' : 'badge-inpr
 function kindBadgeCls(k){ return k === 'Agent' ? 'badge-kind-agent' : 'badge-kind-skill'; }
 function platformBadgeCls(p){ return p === 'Copilot' ? 'badge-platform-copilot' : 'badge-platform-claude'; }
 
-var state = { bySkillSearch:'', bySkillArea:'all', bySkillStatus:'all', byProductTab:'All Products', byProductSearch:'' };
+var state = { bySkillSearch:'', bySkillArea:'all', bySkillStatus:'all', byProductTab:'All Skills', byProductSearch:'' };
 var rendered = { overview:false, 'by-skill':false, 'by-product':false, request:false, idea:false };
 
 function skillInArea(s, key){ return key === 'all' || s.areas.indexOf(key) !== -1; }
 function countByStatus(st){ return SKILLS.filter(function(s){ return s.status === st; }).length; }
 function skillsForProduct(p){
-  if (p === 'All Products') return SKILLS.slice();
-  var members = PRODUCT_GROUPS[p];
-  if (members) return SKILLS.filter(function(s){ return s.products.some(function(sp){ return members.indexOf(sp) !== -1; }); });
-  return SKILLS.filter(function(s){ return s.products.indexOf(p) !== -1; });
+  if (p === 'All Skills') return SKILLS.slice();
+  var members = PRODUCT_GROUPS[p] || [p];
+  return SKILLS.filter(function(s){
+    if (s.products.some(function(sp){ return members.indexOf(sp) !== -1; })) return true;
+    // "All Products" skills appear on every product tab; "General" is reserved for non-product skills.
+    return p !== 'General' && s.products.indexOf('All Products') !== -1;
+  });
+}
+function hasExplicitProduct(p){
+  var members = PRODUCT_GROUPS[p] || [p];
+  return SKILLS.some(function(s){ return s.products.some(function(sp){ return members.indexOf(sp) !== -1; }); });
 }
 
 // ---------------------------------- OVERVIEW ----------------------------------
@@ -1021,6 +1039,7 @@ function renderSkillCard(s){
       ? s.data_sources.map(function(d){ return '<span class="pill-source">' + escapeHtml(d) + '</span>'; }).join(' ')
       : '<span class="pill-source tbd">To be confirmed</span>';
     detail =
+      (s.notice ? '<div class="skill-notice"><strong>Access</strong>' + escapeHtml(s.notice) + '</div>' : '') +
       '<h4>Audience</h4><div class="kv-skills">' + runs + '</div>' +
       (s.products.length ? '<h4>Products</h4><div class="kv-skills">' + products + '</div>' : '') +
       '<h4>Data sources</h4><div class="kv-skills">' + sources + '</div>' +
@@ -1029,7 +1048,7 @@ function renderSkillCard(s){
   } else {
     detail =
       '<h4>Skill Captain</h4><div class="kv-skills">' + owners + '</div>' +
-      '<h4>Expected Launch Date</h4><div class="meta-line"><span>September 18, 2026</span></div>';
+      '<h4>Expected Launch Date</h4><div class="meta-line"><span>' + escapeHtml(s.expected_launch || 'TBD') + '</span></div>';
   }
 
 
@@ -1055,13 +1074,13 @@ function buildByProduct(){
   var el = document.getElementById('section-by-product');
   el.innerHTML =
     '<h1 class="page-title">By Product</h1>' +
-    '<p class="page-sub">Skills and agents grouped by the Perforce product they currently serve. Select a product to filter \u2014 no more scrolling through every product. Items marked <em>All Products</em> or <em>General</em> apply across the portfolio.</p>' +
+    '<p class="page-sub">Skills and agents grouped by the Perforce product they currently serve. Select a product to filter \u2014 no more scrolling through every product. Skills marked <em>All Products</em> apply across the portfolio and appear under every product.</p>' +
     '<div class="area-tabs area-tabs-compact" id="byProductTabs"></div>' +
     '<div class="view-toolbar"><label for="byProductSearch" class="visually-hidden">Filter by name</label><input type="text" class="search-input" id="byProductSearch" placeholder="Filter by name..." oninput="onByProductSearch(this.value)"></div>' +
     '<div id="byProductContent"></div>';
 
   var tabsEl = document.getElementById('byProductTabs');
-  var productsWithSkills = displayProductList().filter(function(p){ return skillsForProduct(p).length > 0; });
+  var productsWithSkills = ['All Skills'].concat(displayProductList().filter(function(p){ return p !== 'All Products' && hasExplicitProduct(p); }));
   tabsEl.innerHTML = productsWithSkills.map(function(p){
     var count = skillsForProduct(p).length;
     var members = PRODUCT_GROUPS[p];
