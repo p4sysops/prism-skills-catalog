@@ -388,13 +388,13 @@ var PRODUCTS = [
   "P4 Plan","P4","ALM","IPLM",
   "Puppet","Delphix",
   "BlazeMeter","Perfecto",
-  "Perforce QAC","Perforce Klocwork"
+  "QAC","Klocwork"
 ];
 
 // Groups of products that should be presented as a single bucket in the
 // "By Product" tabs (skills still tag their individual product underneath).
 var PRODUCT_GROUPS = {
-  "Static Analysis": ["Perforce QAC","Perforce Klocwork"]
+  "Static Analysis": ["QAC","Klocwork"]
 };
 function productGroupFor(p){
   var found = null;
@@ -456,7 +456,7 @@ var SKILLS = [
     kind:"Skill",
     platform:"Claude",
     summary:"Provides a handoff brief on demand to ensure CSMs/TAMs have what they need for a successful transition from Sales.",
-    products:["Delphix","Perfecto","BlazeMeter","P4","Perforce QAC","Perforce Klocwork","Puppet"],
+    products:["Delphix","Perfecto","BlazeMeter","P4","QAC","Klocwork","Puppet"],
     who_runs:["Customer Success Managers","Technical Account Managers"],
     audience:"Internal \u2014 the CSM/TAM team receiving the newly closed account.",
     captains:["Mimi Benach","Mendi Short"],
@@ -482,57 +482,73 @@ var SKILLS = [
     outputs:"An Excel workbook (scenario comparison, model detail, and color-coded assumptions by data tier) and a single-page PowerPoint or PDF one-pager.",
     triggers:[]
   },
-  // ---- CUSTOMER SUCCESS: Wave 2 in-progress skills ----
-  {
-    name:"customer-risk",
-    friendly:"Customer Risk",
-    areas:["customer-success"],
-    status:"in-progress",
-    kind:"Skill",
-    platform:"Claude",
-    summary:"Builds a predictive model to identify customers that may not renew based on historical data.",
-    products:[],
-    who_runs:["Customer Success Managers"],
-    audience:"Customer Success Managers and leadership identifying at-risk accounts ahead of renewal.",
-    captains:["Mimi Benach"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
-    triggers:["/customer-risk"]
-  },
   {
     name:"customer-pain",
     friendly:"Customer Pain",
     areas:["customer-success"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
-    summary:"Identifies customers showing indicators of additional pain points to uncover expansion and cross-sell opportunities.",
-    products:[],
-    who_runs:["Customer Success Managers"],
-    audience:"Customer Success Managers and Account Executives identifying expansion and cross-sell signals.",
+    summary:"Surfaces customer pain points from recorded Gong calls and maps each to the Perforce product and capabilities that could address it, uncovering expansion and cross-sell opportunities.",
+    products:["All Products"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 CSMs and TAMs identifying expansion and cross-sell signals across their accounts.",
     captains:["Walter Guerrero"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
-    triggers:["/customer-pain"]
+    launched:"Oct 2026",
+    data_sources:["Gong", "Salesforce", "Gainsight"],
+    outputs:"An Excel workbook with one row per pain point \u2014 the mapped Perforce product and capabilities, whether the client already owns it, the covering success plan, and action items.",
+    triggers:["run customer pain report", "pull pain points for [account]", "pain report for [CSM name]"]
   },
   {
-    name:"customer-value",
-    friendly:"Customer Value",
+    name:"riskenator-lite",
+    friendly:"Riskenator Lite",
     areas:["customer-success"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
-    summary:"Helps teams identify value-based use cases and business cases, quantify the impact, and determine which discovery questions to ask.",
-    products:[],
-    who_runs:["Customer Success Managers"],
-    audience:"Customer Success Managers and Account Executives building value narratives and business cases.",
+    summary:"Lists a CSM's flagged at-risk renewals for a chosen timeframe, pairing Salesforce risk levels with Gainsight and Gong context.",
+    products:["BlazeMeter", "Perfecto", "Delphix", "P4", "QAC", "Klocwork", "Puppet"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 each CSM or TAM reviewing the renewals on their own book.",
+    captains:["Mimi Benach"],
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gainsight", "Gong"],
+    outputs:"A single HTML report of flagged renewals with account, opportunity, renewal date, TCV and ACV, Salesforce risk level, Gainsight updates, recent Gong calls, and mitigation comments.",
+    triggers:["my at-risk renewals", "what's risky on my accounts next 60 days", "renewals I should worry about this quarter"]
+  },
+  {
+    name:"value-brief-lite",
+    friendly:"Value Brief Lite",
+    areas:["customer-success"],
+    status:"active",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Creates a fast, sourced customer brief for a cadence call or renewal, covering contracts, open cases, and account risk.",
+    products:["All Products"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 CSMs and TAMs preparing for a cadence call or renewal conversation.",
     captains:["Keith Puzey"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:[],
-    outputs:"To be confirmed.",
-    triggers:["/customer-value"]
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gainsight", "Gong"],
+    outputs:"A Markdown brief with active ACV, products, open Perforce-owned support cases, success plans, and recent call themes, each fact labeled by source and as-of date.",
+    triggers:["value brief for [customer]", "cadence call prep for [customer]", "renewal prep for [customer]"]
+  },
+  {
+    name:"value-meal-lite",
+    friendly:"Value Meal Lite",
+    areas:["customer-success"],
+    status:"active",
+    kind:"Skill",
+    platform:"Claude",
+    summary:"Creates an evidence-led QBR report for a customer, adding bounded product telemetry to the account, support, and success data.",
+    products:["All Products"],
+    who_runs:["Customer Success Managers", "Technical Account Managers"],
+    audience:"Internal \u2014 CSMs and TAMs preparing a QBR or focused account review.",
+    captains:["Keith Puzey"],
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gainsight", "Gong", "BlazeMeter Telemetry", "Delphix Usage Data"],
+    outputs:"A Markdown QBR report with contracts, open cases, success plans, and 12 months of BlazeMeter and Delphix usage, each fact labeled by source and as-of date.",
+    triggers:["value meal for [customer]", "QBR prep for [customer]", "QBR report for [customer]"]
   },
   {
     name:"brand-review",
@@ -641,18 +657,18 @@ var SKILLS = [
     name:"account-research",
     friendly:"Account Research",
     areas:["sales"],
-    status:"in-progress",
+    status:"active",
     kind:"Skill",
     platform:"Claude",
     summary:"Synthesizes account intelligence for pre-call prep, giving reps a complete picture before engaging.",
     products:["All Products"],
-    who_runs:["Sales"],
+    who_runs:["Sales","Sales Development"],
     audience:"Account Executives preparing for prospect or customer calls.",
     captains:["Adam Albrecht"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:["Salesforce","Gong","6Sense","Web"],
-    outputs:"To be confirmed.",
-    triggers:["/account-research"]
+    launched:"Oct 2026",
+    data_sources:["Salesforce","6Sense","Web"],
+    outputs:"An account research brief covering company overview, Perforce relationship, key contacts, hiring and intent signals, pain points, a recommended action, and discovery questions.",
+    triggers:["research [company]","pull an account brief for [company]","who should I contact at [company]"]
   },
   {
     name:"path-to-plan",
@@ -682,7 +698,7 @@ var SKILLS = [
     products:["All Products"],
     who_runs:["Sales"],
     audience:"Account Executives and their buyer-side champions co-managing a deal timeline.",
-    captains:["Curtis Bowcutt","Chris Ganacoplos"],
+    captains:["Curtis Bowcutt"],
     launched:"Sep 18, 2026 (planned)",
     data_sources:["Salesforce","Gong"],
     outputs:"To be confirmed.",
@@ -724,21 +740,21 @@ var SKILLS = [
     triggers:["/win-loss-report"]
   },
   {
-    name:"win-loss-story",
-    friendly:"Win/Loss Story",
-    areas:["marketing","product-management"],
-    status:"in-progress",
+    name:"win-story",
+    friendly:"Win Story",
+    areas:["marketing", "product-management"],
+    status:"active",
     kind:"Skill",
     platform:"Claude",
-    summary:"Creates concise win or loss deal stories to explain why priority deals were won or lost and inform sales enablement, product decisions, and leadership visibility.",
+    summary:"Generates a single-slide win story that explains why a new-logo deal was won, for sales enablement, product decisions, and leadership visibility.",
     products:["All Products"],
-    who_runs:["Marketing","Product Marketing","Product Managers"],
-    audience:"Marketing and Product teams analyzing deal outcomes to sharpen positioning and roadmap decisions.",
-    captains:["Chris Perez","Geeta Zanvar","Johan Karlsson"],
-    launched:"Sep 18, 2026 (planned)",
-    data_sources:["Salesforce","Gong"],
-    outputs:"To be confirmed.",
-    triggers:["/win-loss-story"]
+    who_runs:["Product Marketing", "Product Managers"],
+    audience:"Internal \u2014 PMMs and Product Managers documenting wins; output is reviewed by a PMM before wider use.",
+    captains:["Ann Rosen"],
+    launched:"Oct 2026",
+    data_sources:["Salesforce", "Gong"],
+    outputs:"A single-slide PowerPoint win story for PMM review, with an optional sources document tracing every data point.",
+    triggers:["create a win story for [customer]", "show me recent [brand] wins", "/win-story"]
   },
   {
     name:"campaign-planner",
@@ -1006,7 +1022,7 @@ function renderSkillCard(s){
       : '<span class="pill-source tbd">To be confirmed</span>';
     detail =
       '<h4>Audience</h4><div class="kv-skills">' + runs + '</div>' +
-      '<h4>Products</h4><div class="kv-skills">' + products + '</div>' +
+      (s.products.length ? '<h4>Products</h4><div class="kv-skills">' + products + '</div>' : '') +
       '<h4>Data sources</h4><div class="kv-skills">' + sources + '</div>' +
       '<h4>What it produces</h4><div class="outputs-text">' + escapeHtml(s.outputs) + '</div>' +
       '<h4>Skill Captains</h4><div class="kv-skills">' + owners + '</div>';
